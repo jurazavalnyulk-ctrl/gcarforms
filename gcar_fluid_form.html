@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCAR — Запит на рідини</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --surface2: #222222;
+    --border: #2e2e2e;
+    --accent: #3a9fd5;
+    --accent2: #1a6fa0;
+    --text: #f0ede6;
+    --muted: #888;
+    --success: #4caf7d;
+    --error: #e05c2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .form-type-badge {
+    background: var(--accent2);
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 5px 12px;
+    text-transform: uppercase;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .form-title span { color: var(--accent); }
+
+  .form-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 36px;
+  }
+
+  .section { margin-bottom: 32px; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field { margin-bottom: 16px; }
+
+  .field-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .required-dot {
+    width: 5px; height: 5px;
+    background: var(--error);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .optional-tag {
+    font-size: 10px;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  select:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Park row */
+  .park-row { display: flex; gap: 8px; align-items: stretch; }
+  .park-row select { flex: 1; }
+
+  .btn-remember {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 0 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-remember:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-remember.saved { border-color: var(--success); color: var(--success); }
+
+  .saved-hint {
+    font-size: 11px;
+    color: var(--success);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 5px;
+    display: none;
+  }
+
+  /* Fluid type grid */
+  .fluid-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .fluid-pill {
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 12px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .fluid-pill:hover { border-color: var(--accent); color: var(--text); }
+
+  .fluid-pill.active {
+    border-color: var(--accent);
+    background: rgba(58, 159, 213, 0.1);
+    color: var(--accent);
+  }
+
+  /* Amount row */
+  .amount-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 8px;
+    align-items: end;
+  }
+
+  .unit-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  /* User card */
+  .user-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .user-avatar {
+    width: 40px; height: 40px;
+    background: rgba(58,159,213,0.1);
+    border: 1px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .user-info-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .user-info-name { font-size: 15px; font-weight: 500; color: var(--text); }
+  .user-info-tg { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); margin-top: 2px; }
+
+  .no-auth {
+    background: rgba(224,92,42,0.1);
+    border: 1px solid var(--error);
+    padding: 14px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--error);
+    margin-bottom: 32px;
+    display: none;
+  }
+
+  /* Submit */
+  .submit-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Loading */
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 999;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); letter-spacing: 2px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 24px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    transition: transform 0.3s;
+    z-index: 1000; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--success); color: var(--success); }
+  .toast.error { border-color: var(--error); color: var(--error); }
+
+  /* Success */
+  .success-screen { display: none; text-align: center; padding: 60px 20px; }
+  .success-screen.show { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 24px; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 4px; color: var(--success); margin-bottom: 12px; }
+  .success-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+
+  .btn-new {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 2px;
+    padding: 14px 32px; cursor: pointer;
+    text-transform: uppercase; transition: all 0.2s;
+  }
+  .btn-new:hover { background: var(--accent); color: #0f0f0f; }
+
+  .field-error {
+    font-size: 11px; color: var(--error);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 5px; display: none;
+  }
+
+  input.invalid, select.invalid, textarea.invalid { border-color: var(--error); }
+
+  @media (max-width: 480px) {
+    .fluid-grid { grid-template-columns: 1fr; }
+    .form-title { font-size: 36px; }
+    .amount-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">GCAR</div>
+  <div class="form-type-badge">🛢 Рідини</div>
+</div>
+
+<div class="container">
+
+  <div id="formSection">
+    <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
+    <p class="form-subtitle">// FLD-FORM v1.0 — заповніть всі обов'язкові поля</p>
+
+    <!-- Попередження без бота -->
+    <div class="no-auth" id="noAuthWarning">
+      ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот для подачі заявки.
+    </div>
+
+    <!-- Картка користувача -->
+    <div class="user-card" id="userCard" style="display:none">
+      <div class="user-avatar">👤</div>
+      <div>
+        <div class="user-info-label">Подає заявку</div>
+        <div class="user-info-name" id="displayName">—</div>
+        <div class="user-info-tg" id="displayTg">—</div>
+      </div>
+    </div>
+
+    <form id="fluidForm" novalidate>
+
+      <!-- Hidden user fields -->
+      <input type="hidden" id="userName">
+      <input type="hidden" id="userTg">
+
+      <!-- BLOCK 1: Автомобіль -->
+      <div class="section">
+        <div class="section-label">01 — Автомобіль</div>
+
+        <div class="field">
+          <div class="field-label"><span class="required-dot"></span> Автопарк</div>
+          <div class="park-row">
+            <select id="parkSelect" required>
+              <option value="">— завантаження...</option>
+            </select>
+            <button type="button" class="btn-remember" id="btnRemember" onclick="rememberPark()">
+              💾 Запам'ятати
+            </button>
+          </div>
+          <div class="saved-hint" id="savedHint">✓ Автопарк збережено</div>
+          <div class="field-error" id="parkError">Оберіть автопарк</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label"><span class="required-dot"></span> Автомобіль</div>
+          <select id="vehicleSelect" required disabled>
+            <option value="">— спочатку оберіть автопарк</option>
+          </select>
+          <div class="field-error" id="vehicleError">Оберіть автомобіль</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            Пробіг (км)
+            <span class="optional-tag">опційно</span>
+          </div>
+          <input type="number" id="mileage" placeholder="напр. 87430" min="0">
+        </div>
+      </div>
+
+      <!-- BLOCK 2: Рідина -->
+      <div class="section">
+        <div class="section-label">02 — Тип рідини</div>
+
+        <div class="field">
+          <div class="field-label"><span class="required-dot"></span> Оберіть рідину</div>
+          <div class="fluid-grid" id="fluidGrid">
+            <div class="fluid-pill" data-value="Моторна олива">🛢 Моторна олива</div>
+            <div class="fluid-pill" data-value="Антифриз">❄️ Антифриз</div>
+            <div class="fluid-pill" data-value="Гальмівна рідина">🔴 Гальмівна рідина</div>
+            <div class="fluid-pill" data-value="ГПК (рульове)">🔄 ГПК (рульове)</div>
+            <div class="fluid-pill" data-value="Омивач">💧 Омивач</div>
+            <div class="fluid-pill" data-value="AdBlue">🟦 AdBlue</div>
+            <div class="fluid-pill" data-value="Паливо">⛽ Паливо</div>
+          </div>
+          <input type="hidden" id="fluidValue" required>
+          <div class="field-error" id="fluidError">Оберіть тип рідини</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <span class="required-dot"></span> Кількість
+          </div>
+          <div class="amount-row">
+            <input type="number" id="amount" placeholder="напр. 4" min="0.1" step="0.1" required>
+            <div class="unit-badge">літри</div>
+          </div>
+          <div class="field-error" id="amountError">Вкажіть кількість</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            Примітка
+            <span class="optional-tag">опційно</span>
+          </div>
+          <textarea id="note" placeholder="Додаткова інформація..."></textarea>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <button type="submit" class="btn-submit" id="submitBtn">
+          ВІДПРАВИТИ ЗАПИТ
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Success -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">ЗАПИТ ВІДПРАВЛЕНО</div>
+    <div class="success-id" id="successId">ID: FLD-000</div>
+    <button class="btn-new" onclick="resetForm()">+ НОВИЙ ЗАПИТ</button>
+  </div>
+
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">НАДСИЛАННЯ...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_TOKEN  = 'cef12a7785a8496789d539e7e2e34835';
+  const API_BASE   = 'https://api.roapp.io/v2';
+  const N8N_WEBHOOK = 'YOUR_N8N_WEBHOOK_URL';
+
+  let selectedFluid = '';
+  let selectedFiles = [];
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadBranches();
+    loadSavedPark();
+    setupFluidPills();
+    readUrlParams();
+  });
+
+  // ─── URL PARAMS ───────────────────────────────────────────
+  function readUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const tg   = params.get('tg')   || '';
+    const name = params.get('name') || '';
+
+    if (tg && name) {
+      document.getElementById('userName').value = name;
+      document.getElementById('userTg').value   = tg;
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('displayTg').textContent   = tg.startsWith('@') ? tg : '@' + tg;
+      document.getElementById('userCard').style.display = 'flex';
+    } else {
+      document.getElementById('noAuthWarning').style.display = 'block';
+    }
+  }
+
+  // ─── BRANCHES ─────────────────────────────────────────────
+  async function loadBranches() {
+    try {
+      const res  = await fetch(`${API_BASE}/branches`, {
+        headers: { 'Authorization': `Bearer ${API_TOKEN}` }
+      });
+      const data = await res.json();
+      const branches = data.data || data.branches || data || [];
+
+      const sel = document.getElementById('parkSelect');
+      sel.innerHTML = '<option value="">— оберіть автопарк</option>';
+      branches.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = b.name || b.title;
+        sel.appendChild(opt);
+      });
+
+      const saved = localStorage.getItem('gcar_park_id');
+      if (saved) {
+        sel.value = saved;
+        if (sel.value) { loadVehicles(saved); showSavedHint(); }
+      }
+    } catch (e) {
+      showToast('Помилка завантаження автопарків', 'error');
+    }
+  }
+
+  // ─── VEHICLES ─────────────────────────────────────────────
+  document.getElementById('parkSelect').addEventListener('change', function() {
+    const parkId = this.value;
+    const vSel = document.getElementById('vehicleSelect');
+    vSel.innerHTML = '<option value="">— завантаження...</option>';
+    vSel.disabled = true;
+    if (parkId) loadVehicles(parkId);
+  });
+
+  async function loadVehicles(branchId) {
+    try {
+      const res  = await fetch(`${API_BASE}/assets?branch_id=${branchId}&page=1`, {
+        headers: { 'Authorization': `Bearer ${API_TOKEN}` }
+      });
+      const data = await res.json();
+      const vehicles = data.data || data.assets || data || [];
+
+      const sel = document.getElementById('vehicleSelect');
+      sel.innerHTML = '<option value="">— оберіть автомобіль</option>';
+
+      if (!vehicles.length) {
+        sel.innerHTML = '<option value="">— авто не знайдено</option>';
+        sel.disabled = true;
+        return;
+      }
+
+      vehicles.forEach(v => {
+        const opt   = document.createElement('option');
+        opt.value   = v.id;
+        const plate = v.plate_number || v.license_plate || v.registration || '';
+        const name  = v.name || v.title || v.model || '';
+        opt.textContent    = plate ? `${plate} — ${name}` : name;
+        opt.dataset.plate  = plate;
+        opt.dataset.name   = name;
+        sel.appendChild(opt);
+      });
+      sel.disabled = false;
+    } catch (e) {
+      showToast('Помилка завантаження авто', 'error');
+    }
+  }
+
+  // ─── REMEMBER PARK ────────────────────────────────────────
+  function rememberPark() {
+    const sel = document.getElementById('parkSelect');
+    if (!sel.value) { showToast('Спочатку оберіть автопарк', 'error'); return; }
+    localStorage.setItem('gcar_park_id',   sel.value);
+    localStorage.setItem('gcar_park_name', sel.options[sel.selectedIndex].text);
+    showSavedHint();
+    showToast('✓ Автопарк збережено', 'success');
+    const btn = document.getElementById('btnRemember');
+    btn.classList.add('saved');
+    btn.textContent = '✓ Збережено';
+    setTimeout(() => { btn.classList.remove('saved'); btn.textContent = '💾 Запам\'ятати'; }, 2000);
+  }
+
+  function showSavedHint() {
+    const name = localStorage.getItem('gcar_park_name') || '';
+    const hint = document.getElementById('savedHint');
+    hint.textContent = `✓ Збережено: ${name}`;
+    hint.style.display = 'block';
+  }
+
+  function loadSavedPark() {
+    if (localStorage.getItem('gcar_park_id')) showSavedHint();
+  }
+
+  // ─── FLUID PILLS ──────────────────────────────────────────
+  function setupFluidPills() {
+    document.querySelectorAll('.fluid-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        selectedFluid = pill.dataset.value;
+        document.getElementById('fluidValue').value = selectedFluid;
+        document.getElementById('fluidError').style.display = 'none';
+      });
+    });
+  }
+
+  // ─── VALIDATION ───────────────────────────────────────────
+  function validate() {
+    let ok = true;
+    const fields = [
+      { id: 'parkSelect',   err: 'parkError',    },
+      { id: 'vehicleSelect',err: 'vehicleError', },
+      { id: 'fluidValue',   err: 'fluidError',   },
+      { id: 'amount',       err: 'amountError',  },
+    ];
+    fields.forEach(f => {
+      const el  = document.getElementById(f.id);
+      const err = document.getElementById(f.err);
+      if (!el.value.trim()) {
+        el.classList.add('invalid');
+        err.style.display = 'block';
+        ok = false;
+      } else {
+        el.classList.remove('invalid');
+        err.style.display = 'none';
+      }
+    });
+    return ok;
+  }
+
+  // ─── SUBMIT ───────────────────────────────────────────────
+  document.getElementById('fluidForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validate()) { showToast('Заповніть всі обов\'язкові поля', 'error'); return; }
+
+    const parkSel    = document.getElementById('parkSelect');
+    const vehicleSel = document.getElementById('vehicleSelect');
+    const selOpt     = vehicleSel.options[vehicleSel.selectedIndex];
+
+    const fldId = 'FLD-' + Date.now().toString().slice(-6);
+    const now   = new Date();
+
+    const payload = {
+      id:            fldId,
+      date:          now.toISOString().split('T')[0],
+      time:          now.toTimeString().slice(0,5),
+      park_id:       parkSel.value,
+      park_name:     parkSel.options[parkSel.selectedIndex].text,
+      vehicle_id:    vehicleSel.value,
+      vehicle_plate: selOpt?.dataset.plate || '',
+      vehicle_name:  selOpt?.dataset.name  || '',
+      mileage:       document.getElementById('mileage').value || '',
+      fluid_type:    selectedFluid,
+      amount_liters: document.getElementById('amount').value,
+      note:          document.getElementById('note').value || '',
+      user_name:     document.getElementById('userName').value,
+      user_tg:       document.getElementById('userTg').value,
+      form_type:     'fluid',
+    };
+
+    showLoading(true);
+
+    try {
+      const response = await fetch(N8N_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      showLoading(false);
+      showSuccess(fldId);
+
+    } catch (err) {
+      showLoading(false);
+      if (N8N_WEBHOOK === 'YOUR_N8N_WEBHOOK_URL') {
+        console.log('PAYLOAD (webhook не налаштовано):', payload);
+        showSuccess(fldId);
+        showToast('⚠️ Webhook не налаштовано — дані в консолі', 'error');
+      } else {
+        showToast('Помилка відправки. Спробуйте ще раз.', 'error');
+      }
+    }
+  });
+
+  // ─── UI HELPERS ───────────────────────────────────────────
+  function showLoading(show) {
+    document.getElementById('loadingOverlay').classList.toggle('show', show);
+    document.getElementById('submitBtn').disabled = show;
+  }
+
+  function showSuccess(id) {
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+    document.getElementById('successId').textContent = `ID: ${id}`;
+  }
+
+  function resetForm() {
+    document.getElementById('fluidForm').reset();
+    selectedFluid = '';
+    document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('fluidValue').value = '';
+    document.getElementById('vehicleSelect').disabled = true;
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('successScreen').classList.remove('show');
+    loadBranches();
+    readUrlParams();
+  }
+
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
