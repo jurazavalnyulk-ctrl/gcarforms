@@ -701,10 +701,10 @@
             <span class="optional-tag">опційно, до 10 фото</span>
           </div>
           <div class="photo-upload" id="photoDropzone">
-            <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(this)">
-            <span class="upload-icon">📷</span>
-            <div class="upload-text">Натисніть або перетягніть фото</div>
-            <div class="upload-hint">JPG, PNG, HEIC — макс. 10 МБ кожне</div>
+            <input type="file" id="photoInput" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handlePhotos(this)">
+            <span class="upload-icon">📷🎥</span>
+            <div class="upload-text">Натисніть або перетягніть фото або відео</div>
+            <div class="upload-hint">JPG, PNG, HEIC, WebP, MP4, MOV — макс. 50 МБ</div>
           </div>
           <div class="photo-previews" id="photoPreviews"></div>
         </div>
@@ -713,6 +713,7 @@
       <!-- Hidden user fields (з URL параметрів) -->
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
+      <input type="hidden" id="chatId">
 
       <!-- Submit -->
       <div class="submit-section">
@@ -747,7 +748,7 @@
   // ─── CONFIG ───────────────────────────────────────────────
   const API_TOKEN = 'cef12a7785a8496789d539e7e2e34835';
   const API_BASE  = 'https://api.roapp.io/v2';
-  const N8N_WEBHOOK = 'https://n8n.gcarfleet.cfd/webhook/19835418-6ad4-46d1-9a9d-068a0af5a165';
+  const N8N_WEBHOOK = 'https://n8n.gcarfleet.cfd/webhook/19835418-6ad4-46d1-9a9d-068a0af5a165'; // замінити після налаштування n8n
 
   // ─── STATE ────────────────────────────────────────────────
   let selectedFiles = [];
@@ -887,7 +888,7 @@
     dz.addEventListener('drop', e => {
       e.preventDefault();
       dz.style.borderColor = '';
-      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
       addFiles(files);
     });
   }
@@ -900,7 +901,7 @@
   function addFiles(files) {
     files.forEach(file => {
       if (selectedFiles.length >= 10) { showToast('Максимум 10 фото', 'error'); return; }
-      if (file.size > 10 * 1024 * 1024) { showToast(`${file.name} — занадто великий (>10МБ)`, 'error'); return; }
+      if (file.size > 50 * 1024 * 1024) { showToast(`${file.name} — занадто великий (>50МБ)`, 'error'); return; }
       selectedFiles.push(file);
       renderPreview(file, selectedFiles.length - 1);
     });
@@ -988,6 +989,7 @@
       photos_count: selectedFiles.filter(Boolean).length,
       user_name:   document.getElementById('userName').value,
       user_tg:     document.getElementById('userTg').value,
+      chat_id:     document.getElementById('chatId').value,
       form_type:   'repair',
     };
 
