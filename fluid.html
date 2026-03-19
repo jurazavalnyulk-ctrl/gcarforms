@@ -406,6 +406,7 @@
       <!-- Hidden user fields -->
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
+      <input type="hidden" id="chatId">
 
       <!-- BLOCK 1: Автомобіль -->
       <div class="section">
@@ -527,8 +528,11 @@
   // ─── URL PARAMS ───────────────────────────────────────────
   function readUrlParams() {
     const params = new URLSearchParams(window.location.search);
-    const tg   = params.get('tg')   || '';
-    const name = params.get('name') || '';
+    const tg      = params.get('tg')      || '';
+    const name    = params.get('name')    || '';
+    const chat_id = params.get('chat_id') || '';
+
+    if (chat_id) document.getElementById('chatId').value = chat_id;
 
     if (tg && name) {
       document.getElementById('userName').value = name;
@@ -700,6 +704,7 @@
       note:          document.getElementById('note').value || '',
       user_name:     document.getElementById('userName').value,
       user_tg:       document.getElementById('userTg').value,
+      chat_id:       document.getElementById('chatId').value,
       form_type:     'fluid',
     };
 
