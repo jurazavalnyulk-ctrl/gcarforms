@@ -29,7 +29,6 @@
     padding: 0 0 60px;
   }
 
-  /* Header */
   .header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -42,574 +41,114 @@
     z-index: 100;
   }
 
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 3px;
-    color: var(--accent);
-  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); }
+  .form-type-badge { background: var(--accent2); color: white; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; padding: 5px 12px; text-transform: uppercase; }
 
-  .logo span {
-    color: var(--text);
-    opacity: 0.4;
-    font-size: 13px;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 1px;
-    display: block;
-    line-height: 1;
-    margin-top: -2px;
-  }
+  .container { max-width: 680px; margin: 0 auto; padding: 32px 20px; }
 
-  .form-type-badge {
-    background: var(--accent2);
-    color: white;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    padding: 5px 12px;
-    text-transform: uppercase;
-  }
-
-  /* Main container */
-  .container {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 32px 20px;
-  }
-
-  .form-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 48px;
-    letter-spacing: 4px;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
+  .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 4px; line-height: 1; margin-bottom: 8px; }
   .form-title span { color: var(--accent); }
+  .form-subtitle { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 36px; }
 
-  .form-subtitle {
-    font-size: 13px;
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 36px;
-  }
+  .section { margin-bottom: 32px; }
+  .section-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* Section */
-  .section {
-    margin-bottom: 32px;
-  }
+  .field { margin-bottom: 16px; }
+  .field-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; display: flex; align-items: center; gap: 6px; }
+  .required-dot { width: 5px; height: 5px; background: var(--accent2); border-radius: 50%; display: inline-block; }
+  .optional-tag { font-size: 10px; color: var(--muted); opacity: 0.6; }
 
-  .section-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  input, select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; padding: 12px 14px; outline: none; transition: border-color 0.2s; border-radius: 0; appearance: none; -webkit-appearance: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
+  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  select:disabled { opacity: 0.4; cursor: not-allowed; }
+  select option { background: var(--surface2); }
+  textarea { resize: vertical; min-height: 90px; }
 
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .park-row { display: flex; gap: 8px; align-items: stretch; }
+  .park-row select { flex: 1; }
+  .btn-remember { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 0 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; }
+  .btn-remember:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-remember.saved { border-color: var(--success); color: var(--success); }
+  .saved-hint { font-size: 11px; color: var(--success); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
 
-  /* Field */
-  .field {
-    margin-bottom: 16px;
-  }
+  .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .cat-pill { border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .cat-pill:hover { border-color: var(--accent); color: var(--text); }
+  .cat-pill.active { border-color: var(--accent); background: rgba(240,192,64,0.1); color: var(--accent); }
 
-  .field-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .photo-upload { border: 1px dashed var(--border); background: var(--surface2); padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; position: relative; }
+  .photo-upload:hover { border-color: var(--accent); }
+  .photo-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+  .upload-text { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+  .upload-hint { font-size: 11px; color: var(--muted); opacity: 0.5; margin-top: 4px; }
+  .photo-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .photo-preview-wrap { position: relative; }
+  .photo-preview, .video-preview { width: 80px; height: 80px; object-fit: cover; border: 1px solid var(--border); display: block; }
+  .photo-remove { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: var(--accent2); border: none; color: white; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-  .required-dot {
-    width: 5px;
-    height: 5px;
-    background: var(--accent2);
-    border-radius: 50%;
-    display: inline-block;
-  }
+  .user-card { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+  .user-avatar { width: 40px; height: 40px; background: rgba(240,192,64,0.1); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .user-info-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .user-info-name { font-size: 15px; font-weight: 500; color: var(--text); }
+  .user-info-tg { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); margin-top: 2px; }
+  .no-auth { background: rgba(224,92,42,0.1); border: 1px solid var(--accent2); padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent2); margin-bottom: 32px; display: none; }
 
-  .optional-tag {
-    font-size: 10px;
-    color: var(--muted);
-    opacity: 0.6;
-  }
+  .vehicles-loading { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; display: none; }
 
-  input, select, textarea {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 15px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    border-radius: 0;
-    appearance: none;
-    -webkit-appearance: none;
-  }
+  .submit-section { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 28px; }
+  .btn-submit { width: 100%; background: var(--accent); color: #0f0f0f; border: none; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; padding: 18px; cursor: pointer; transition: all 0.2s; }
+  .btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-  }
-
-  input::placeholder, textarea::placeholder {
-    color: var(--muted);
-    opacity: 0.5;
-  }
-
-  select {
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 36px;
-  }
-
-  select:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 90px;
-  }
-
-  /* Park row with save button */
-  .park-row {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-  }
-
-  .park-row select {
-    flex: 1;
-  }
-
-  .btn-remember {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
-    padding: 0 14px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-
-  .btn-remember:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .btn-remember.saved {
-    border-color: var(--success);
-    color: var(--success);
-  }
-
-  .saved-hint {
-    font-size: 11px;
-    color: var(--success);
-    font-family: 'IBM Plex Mono', monospace;
-    margin-top: 5px;
-    display: none;
-  }
-
-  /* Two columns */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  /* User info card (з URL параметрів) */
-  .user-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 32px;
-  }
-
-  .user-avatar {
-    width: 40px;
-    height: 40px;
-    background: rgba(240,192,64,0.1);
-    border: 1px solid var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .user-info-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .user-info-tg {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--accent);
-    margin-top: 2px;
-  }
-
-  .user-info-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  /* No-auth warning */
-  .no-auth {
-    background: rgba(224,92,42,0.1);
-    border: 1px solid var(--accent2);
-    padding: 14px 16px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--accent2);
-    margin-bottom: 32px;
-    display: none;
-  }
-
-  /* Category pills */
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .cat-pill {
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    padding: 10px 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-  }
-
-  .cat-pill:hover {
-    border-color: var(--accent);
-    color: var(--text);
-  }
-
-  .cat-pill.active {
-    border-color: var(--accent);
-    background: rgba(240, 192, 64, 0.1);
-    color: var(--accent);
-  }
-
-  /* Photo upload */
-  .photo-upload {
-    border: 1px dashed var(--border);
-    background: var(--surface2);
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    position: relative;
-  }
-
-  .photo-upload:hover {
-    border-color: var(--accent);
-  }
-
-  .photo-upload input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-
-  .upload-icon {
-    font-size: 28px;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .upload-text {
-    font-size: 13px;
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-  }
-
-  .upload-hint {
-    font-size: 11px;
-    color: var(--muted);
-    opacity: 0.5;
-    margin-top: 4px;
-  }
-
-  .photo-previews {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  .photo-preview {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    position: relative;
-  }
-
-  .photo-preview-wrap {
-    position: relative;
-  }
-
-  .photo-remove {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 18px;
-    height: 18px;
-    background: var(--accent2);
-    border: none;
-    color: white;
-    font-size: 11px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-
-  /* Submit */
-  .submit-section {
-    margin-top: 40px;
-    border-top: 1px solid var(--border);
-    padding-top: 28px;
-  }
-
-  .btn-submit {
-    width: 100%;
-    background: var(--accent);
-    color: #0f0f0f;
-    border: none;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 4px;
-    padding: 18px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-submit:hover {
-    background: #f7d060;
-    transform: translateY(-1px);
-  }
-
-  .btn-submit:active {
-    transform: translateY(0);
-  }
-
-  .btn-submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* Loading state */
-  .loading-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
-  }
-
+  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
   .loading-overlay.show { display: flex; }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
+  .spinner { width: 40px; height: 40px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); letter-spacing: 2px; }
 
-  .loading-text {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px 24px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    transition: transform 0.3s;
-    z-index: 1000;
-    white-space: nowrap;
-  }
-
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface); border: 1px solid var(--border); padding: 14px 24px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; transition: transform 0.3s; z-index: 1000; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: var(--success); color: var(--success); }
   .toast.error { border-color: var(--error); color: var(--error); }
 
-  /* Success screen */
-  .success-screen {
-    display: none;
-    text-align: center;
-    padding: 60px 20px;
-  }
-
+  .success-screen { display: none; text-align: center; padding: 60px 20px; }
   .success-screen.show { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 24px; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 4px; color: var(--success); margin-bottom: 12px; }
+  .success-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+  .btn-new { background: transparent; border: 1px solid var(--accent); color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 2px; padding: 14px 32px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+  .btn-new:hover { background: var(--accent); color: #0f0f0f; }
 
-  .success-icon {
-    font-size: 64px;
-    margin-bottom: 24px;
-  }
-
-  .success-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
-    letter-spacing: 4px;
-    color: var(--success);
-    margin-bottom: 12px;
-  }
-
-  .success-id {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 32px;
-  }
-
-  .btn-new {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 2px;
-    padding: 14px 32px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-
-  .btn-new:hover {
-    background: var(--accent);
-    color: #0f0f0f;
-  }
-
-  /* Error message */
-  .field-error {
-    font-size: 11px;
-    color: var(--error);
-    font-family: 'IBM Plex Mono', monospace;
-    margin-top: 5px;
-    display: none;
-  }
-
-  input.invalid, select.invalid, textarea.invalid {
-    border-color: var(--error);
-  }
+  .field-error { font-size: 11px; color: var(--error); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
+  input.invalid, select.invalid, textarea.invalid { border-color: var(--error); }
 
   @media (max-width: 480px) {
-    .two-col { grid-template-columns: 1fr; }
     .category-grid { grid-template-columns: repeat(2, 1fr); }
     .form-title { font-size: 36px; }
   }
-
-  /* User info card */
-  .user-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 32px;
-  }
-  .user-avatar {
-    width: 40px; height: 40px;
-    background: rgba(240,192,64,0.1);
-    border: 1px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-  .user-info-label { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-  .user-info-name { font-size: 15px; font-weight: 500; color: var(--text); }
-  .user-info-tg { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent); margin-top: 2px; }
-  .no-auth { background: rgba(224,92,42,0.1); border: 1px solid var(--accent2); padding: 14px 16px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent2); margin-bottom: 32px; display: none; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo">
-    GCAR
-    
-  </div>
+  <div class="logo">GCAR</div>
   <div class="form-type-badge">🔧 Ремонт</div>
 </div>
 
 <div class="container">
-
-  <!-- Form -->
   <div id="formSection">
     <h1 class="form-title">ЗАЯВКА<br>НА <span>РЕМОНТ</span></h1>
-    <p class="form-subtitle">// REP-FORM v1.0 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// REP-FORM v2.0 — заповніть всі обов'язкові поля</p>
 
-
-    <!-- Попередження якщо відкрито без бота -->
     <div class="no-auth" id="noAuthWarning">
-      ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот для подачі заявки.
+      ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.
     </div>
-    <!-- Картка користувача -->
+
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
       <div>
@@ -618,23 +157,24 @@
         <div class="user-info-tg" id="displayTg">—</div>
       </div>
     </div>
-    <form id="repairForm" novalidate>
 
-      <!-- BLOCK 1: Автомобіль -->
+    <form id="repairForm" novalidate>
+      <input type="hidden" id="userName">
+      <input type="hidden" id="userTg">
+      <input type="hidden" id="chatId">
+
       <div class="section">
         <div class="section-label">01 — Автомобіль</div>
 
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Автопарк</div>
           <div class="park-row">
-            <select id="parkSelect" required>
+            <select id="parkSelect" required onchange="onParkChange()">
               <option value="">— завантаження...</option>
             </select>
-            <button type="button" class="btn-remember" id="btnRemember" onclick="rememberPark()">
-              💾 Запам'ятати
-            </button>
+            <button type="button" class="btn-remember" id="btnRemember" onclick="rememberPark()">💾 Запам'ятати</button>
           </div>
-          <div class="saved-hint" id="savedHint">✓ Автопарк збережено</div>
+          <div class="saved-hint" id="savedHint"></div>
           <div class="field-error" id="parkError">Оберіть автопарк</div>
         </div>
 
@@ -643,25 +183,22 @@
           <select id="vehicleSelect" required disabled>
             <option value="">— спочатку оберіть автопарк</option>
           </select>
+          <div class="vehicles-loading" id="vehiclesLoading">⏳ Завантаження авто...</div>
           <div class="field-error" id="vehicleError">Оберіть автомобіль</div>
         </div>
 
         <div class="field">
-          <div class="field-label">
-            Пробіг (км)
-            <span class="optional-tag">опційно</span>
-          </div>
+          <div class="field-label">Пробіг (км) <span class="optional-tag">опційно</span></div>
           <input type="number" id="mileage" placeholder="напр. 87430" min="0">
         </div>
       </div>
 
-      <!-- BLOCK 2: Ремонт -->
       <div class="section">
         <div class="section-label">02 — Тип ремонту</div>
 
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Категорія</div>
-          <div class="category-grid" id="categoryGrid">
+          <div class="category-grid">
             <div class="cat-pill" data-value="Гальма">🛞 Гальма</div>
             <div class="cat-pill" data-value="Підвіска">🔩 Підвіска</div>
             <div class="cat-pill" data-value="Двигун">⚙️ Двигун</div>
@@ -683,170 +220,141 @@
         </div>
 
         <div class="field">
-          <div class="field-label">
-            Сума заявлена (грн)
-            <span class="optional-tag">опційно</span>
-          </div>
+          <div class="field-label">Сума заявлена (грн) <span class="optional-tag">опційно</span></div>
           <input type="number" id="amount" placeholder="напр. 1800" min="0">
         </div>
       </div>
 
-      <!-- BLOCK 3: Фото -->
       <div class="section">
-        <div class="section-label">03 — Фото</div>
-
+        <div class="section-label">03 — Фото / Відео</div>
         <div class="field">
-          <div class="field-label">
-            Фотографії
-            <span class="optional-tag">опційно, до 10 фото</span>
-          </div>
+          <div class="field-label">Файли <span class="optional-tag">опційно, до 10 файлів, макс 50МБ кожен</span></div>
           <div class="photo-upload" id="photoDropzone">
-            <input type="file" id="photoInput" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handlePhotos(this)">
+            <input type="file" id="photoInput" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handleFiles(this)">
             <span class="upload-icon">📷🎥</span>
             <div class="upload-text">Натисніть або перетягніть фото або відео</div>
-            <div class="upload-hint">JPG, PNG, HEIC, WebP, MP4, MOV — макс. 50 МБ</div>
+            <div class="upload-hint">JPG, PNG, HEIC, MP4, MOV — макс. 50 МБ</div>
           </div>
           <div class="photo-previews" id="photoPreviews"></div>
         </div>
       </div>
 
-      <!-- Hidden user fields (з URL параметрів) -->
-      <input type="hidden" id="userName">
-      <input type="hidden" id="userTg">
-      <input type="hidden" id="chatId">
-
-      <!-- Submit -->
       <div class="submit-section">
-        <button type="submit" class="btn-submit" id="submitBtn">
-          ВІДПРАВИТИ ЗАЯВКУ
-        </button>
+        <button type="submit" class="btn-submit" id="submitBtn">ВІДПРАВИТИ ЗАЯВКУ</button>
       </div>
-
     </form>
   </div>
 
-  <!-- Success -->
   <div class="success-screen" id="successScreen">
     <div class="success-icon">✅</div>
     <div class="success-title">ЗАЯВКУ ВІДПРАВЛЕНО</div>
     <div class="success-id" id="successId">ID: REP-000</div>
     <button class="btn-new" onclick="resetForm()">+ НОВА ЗАЯВКА</button>
   </div>
-
 </div>
 
-<!-- Loading -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-text">НАДСИЛАННЯ...</div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-  // ─── CONFIG ───────────────────────────────────────────────
-  const API_TOKEN = 'cef12a7785a8496789d539e7e2e34835';
-  const API_BASE  = 'https://api.roapp.io/v2';
-  const N8N_WEBHOOK = 'https://n8n.gcarfleet.cfd/webhook/19835418-6ad4-46d1-9a9d-068a0af5a165'; // замінити після налаштування n8n
+  const N8N_BASE = 'https://n8n.gcarfleet.cfd/webhook';
+  const N8N_SUBMIT = 'https://n8n.gcarfleet.cfd/webhook/repair-submit';
 
-  // ─── STATE ────────────────────────────────────────────────
   let selectedFiles = [];
   let selectedCategory = '';
 
-  // ─── INIT ─────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', () => {
-    loadBranches();
+    readUrlParams();
+    loadFleets();
     loadSavedPark();
     setupCategoryPills();
     setupDragDrop();
   });
 
-  // ─── BRANCHES (автопарки) ─────────────────────────────────
-  async function loadBranches() {
-    try {
-      const res = await fetch(`${API_BASE}/branches`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}` }
-      });
-      const data = await res.json();
-      const branches = data.data || data.branches || data || [];
+  function readUrlParams() {
+    const p = new URLSearchParams(location.search);
+    const tg = p.get('tg') || '';
+    const name = p.get('name') || '';
+    const chat_id = p.get('chat_id') || '';
+    if (chat_id) document.getElementById('chatId').value = chat_id;
+    if (tg && name) {
+      document.getElementById('userName').value = name;
+      document.getElementById('userTg').value = tg;
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
+      document.getElementById('userCard').style.display = 'flex';
+    } else {
+      document.getElementById('noAuthWarning').style.display = 'block';
+    }
+  }
 
+  async function loadFleets() {
+    try {
+      const res = await fetch(`${N8N_BASE}/fleets`);
+      const data = await res.json();
       const sel = document.getElementById('parkSelect');
       sel.innerHTML = '<option value="">— оберіть автопарк</option>';
-
-      branches.forEach(b => {
+      data.forEach(b => {
         const opt = document.createElement('option');
-        opt.value = b.id;
-        opt.textContent = b.name || b.title;
+        opt.value = b.warehouse_id;
+        opt.textContent = b.title;
         sel.appendChild(opt);
       });
-
-      // Restore saved park
       const saved = localStorage.getItem('gcar_park_id');
       if (saved) {
         sel.value = saved;
-        if (sel.value) {
-          loadVehicles(saved);
-          showSavedHint();
-        }
+        if (sel.value) { loadVehicles(saved); showSavedHint(); }
       }
     } catch (e) {
-      console.error('Помилка завантаження автопарків:', e);
       showToast('Помилка завантаження автопарків', 'error');
     }
   }
 
-  // ─── VEHICLES (авто) ──────────────────────────────────────
-  document.getElementById('parkSelect').addEventListener('change', function() {
-    const parkId = this.value;
+  function onParkChange() {
+    const warehouseId = document.getElementById('parkSelect').value;
     const vSel = document.getElementById('vehicleSelect');
     vSel.innerHTML = '<option value="">— завантаження...</option>';
     vSel.disabled = true;
-    if (parkId) loadVehicles(parkId);
-  });
+    if (warehouseId) loadVehicles(warehouseId);
+  }
 
-  async function loadVehicles(branchId) {
+  async function loadVehicles(warehouseId) {
+    const vSel = document.getElementById('vehicleSelect');
+    const loader = document.getElementById('vehiclesLoading');
+    loader.style.display = 'block';
     try {
-      const res = await fetch(`${API_BASE}/assets?branch_id=${branchId}&page=1`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}` }
-      });
+      const res = await fetch(`${N8N_BASE}/vehicles?warehouse_id=${warehouseId}`);
       const data = await res.json();
-      const vehicles = data.data || data.assets || data || [];
-
-      const sel = document.getElementById('vehicleSelect');
-      sel.innerHTML = '<option value="">— оберіть автомобіль</option>';
-
-      if (vehicles.length === 0) {
-        sel.innerHTML = '<option value="">— авто не знайдено</option>';
-        sel.disabled = true;
+      loader.style.display = 'none';
+      vSel.innerHTML = '<option value="">— оберіть автомобіль</option>';
+      if (!data.length) {
+        vSel.innerHTML = '<option value="">— авто не знайдено</option>';
+        vSel.disabled = true;
         return;
       }
-
-      vehicles.forEach(v => {
+      data.forEach(v => {
         const opt = document.createElement('option');
-        opt.value = v.id;
-        const plate = v.plate_number || v.license_plate || v.registration || '';
-        const name  = v.name || v.title || v.model || '';
-        opt.textContent = plate ? `${plate} — ${name}` : name;
-        opt.dataset.plate = plate;
-        opt.dataset.name  = name;
-        sel.appendChild(opt);
+        opt.value = v.uid;
+        opt.textContent = `${v.uid} — ${v.brand} ${v.model}`;
+        opt.dataset.name = v.title;
+        vSel.appendChild(opt);
       });
-
-      sel.disabled = false;
+      vSel.disabled = false;
     } catch (e) {
-      console.error('Помилка завантаження авто:', e);
+      loader.style.display = 'none';
       showToast('Помилка завантаження авто', 'error');
     }
   }
 
-  // ─── REMEMBER PARK ────────────────────────────────────────
   function rememberPark() {
-    const parkId  = document.getElementById('parkSelect').value;
-    const parkName = document.getElementById('parkSelect').options[document.getElementById('parkSelect').selectedIndex]?.text;
-    if (!parkId) { showToast('Спочатку оберіть автопарк', 'error'); return; }
-    localStorage.setItem('gcar_park_id', parkId);
-    localStorage.setItem('gcar_park_name', parkName);
+    const sel = document.getElementById('parkSelect');
+    if (!sel.value) { showToast('Спочатку оберіть автопарк', 'error'); return; }
+    localStorage.setItem('gcar_park_id', sel.value);
+    localStorage.setItem('gcar_park_name', sel.options[sel.selectedIndex].text);
     showSavedHint();
     showToast('✓ Автопарк збережено', 'success');
     const btn = document.getElementById('btnRemember');
@@ -856,8 +364,7 @@
   }
 
   function loadSavedPark() {
-    const saved = localStorage.getItem('gcar_park_id');
-    if (saved) showSavedHint();
+    if (localStorage.getItem('gcar_park_id')) showSavedHint();
   }
 
   function showSavedHint() {
@@ -867,7 +374,6 @@
     hint.style.display = 'block';
   }
 
-  // ─── CATEGORY PILLS ───────────────────────────────────────
   function setupCategoryPills() {
     document.querySelectorAll('.cat-pill').forEach(pill => {
       pill.addEventListener('click', () => {
@@ -880,7 +386,6 @@
     });
   }
 
-  // ─── PHOTOS ───────────────────────────────────────────────
   function setupDragDrop() {
     const dz = document.getElementById('photoDropzone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
@@ -888,60 +393,56 @@
     dz.addEventListener('drop', e => {
       e.preventDefault();
       dz.style.borderColor = '';
-      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
-      addFiles(files);
+      addFiles(Array.from(e.dataTransfer.files));
     });
   }
 
-  function handlePhotos(input) {
+  function handleFiles(input) {
     addFiles(Array.from(input.files));
     input.value = '';
   }
 
   function addFiles(files) {
     files.forEach(file => {
-      if (selectedFiles.length >= 10) { showToast('Максимум 10 фото', 'error'); return; }
+      if (selectedFiles.length >= 10) { showToast('Максимум 10 файлів', 'error'); return; }
       if (file.size > 50 * 1024 * 1024) { showToast(`${file.name} — занадто великий (>50МБ)`, 'error'); return; }
+      const idx = selectedFiles.length;
       selectedFiles.push(file);
-      renderPreview(file, selectedFiles.length - 1);
+      renderPreview(file, idx);
     });
   }
 
   function renderPreview(file, idx) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const wrap = document.createElement('div');
-      wrap.className = 'photo-preview-wrap';
-      wrap.dataset.idx = idx;
-      wrap.innerHTML = `
-        <img class="photo-preview" src="${e.target.result}" alt="photo">
-        <button type="button" class="photo-remove" onclick="removePhoto(${idx})">✕</button>
-      `;
-      document.getElementById('photoPreviews').appendChild(wrap);
-    };
-    reader.readAsDataURL(file);
+    const wrap = document.createElement('div');
+    wrap.className = 'photo-preview-wrap';
+    wrap.dataset.idx = idx;
+    if (file.type.startsWith('video/')) {
+      const url = URL.createObjectURL(file);
+      wrap.innerHTML = `<video class="video-preview" src="${url}" muted></video><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
+    } else {
+      const reader = new FileReader();
+      reader.onload = e => {
+        wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
+      };
+      reader.readAsDataURL(file);
+    }
+    document.getElementById('photoPreviews').appendChild(wrap);
   }
 
-  function removePhoto(idx) {
+  function removeFile(idx) {
     selectedFiles[idx] = null;
     const wrap = document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`);
     if (wrap) wrap.remove();
   }
 
-  // ─── VALIDATION ───────────────────────────────────────────
   function validate() {
     let ok = true;
-
-    const fields = [
-      { id: 'parkSelect',    err: 'parkError',       msg: 'Оберіть автопарк' },
-      { id: 'vehicleSelect', err: 'vehicleError',     msg: 'Оберіть автомобіль' },
-      { id: 'categoryValue', err: 'categoryError',    msg: 'Оберіть категорію' },
-      { id: 'description',   err: 'descriptionError', msg: 'Опишіть проблему' },
-      { id: 'userName',      err: 'userNameError',    msg: 'Введіть ім\'я' },
-      { id: 'userTg',        err: 'userTgError',      msg: 'Введіть @username' },
-    ];
-
-    fields.forEach(f => {
+    [
+      { id: 'parkSelect', err: 'parkError' },
+      { id: 'vehicleSelect', err: 'vehicleError' },
+      { id: 'categoryValue', err: 'categoryError' },
+      { id: 'description', err: 'descriptionError' },
+    ].forEach(f => {
       const el = document.getElementById(f.id);
       const errEl = document.getElementById(f.err);
       if (!el.value.trim()) {
@@ -953,79 +454,61 @@
         errEl.style.display = 'none';
       }
     });
-
     return ok;
   }
 
-  // ─── SUBMIT ───────────────────────────────────────────────
   document.getElementById('repairForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validate()) { showToast('Заповніть всі обов\'язкові поля', 'error'); return; }
 
-    const parkSel    = document.getElementById('parkSelect');
+    const parkSel = document.getElementById('parkSelect');
     const vehicleSel = document.getElementById('vehicleSelect');
-    const selOpt     = vehicleSel.options[vehicleSel.selectedIndex];
-
-    // Generate ID
+    const selOpt = vehicleSel.options[vehicleSel.selectedIndex];
     const repId = 'REP-' + Date.now().toString().slice(-6);
-    const now   = new Date();
-    const date  = now.toISOString().split('T')[0];
-    const time  = now.toTimeString().slice(0,5);
-
-    // Build payload
-    const payload = {
-      id:          repId,
-      date:        date,
-      time:        time,
-      park_id:     parkSel.value,
-      park_name:   parkSel.options[parkSel.selectedIndex].text,
-      vehicle_id:  vehicleSel.value,
-      vehicle_plate: selOpt?.dataset.plate || '',
-      vehicle_name:  selOpt?.dataset.name  || '',
-      mileage:     document.getElementById('mileage').value || '',
-      category:    selectedCategory,
-      description: document.getElementById('description').value,
-      amount:      document.getElementById('amount').value || '',
-      photos_count: selectedFiles.filter(Boolean).length,
-      user_name:   document.getElementById('userName').value,
-      user_tg:     document.getElementById('userTg').value,
-      chat_id:     document.getElementById('chatId').value,
-      form_type:   'repair',
-    };
+    const now = new Date();
 
     showLoading(true);
 
     try {
-      // Encode photos as base64
-      const photos = [];
+      const files = [];
       for (const file of selectedFiles.filter(Boolean)) {
         const b64 = await toBase64(file);
-        photos.push({ name: file.name, data: b64, type: file.type });
+        files.push({ name: file.name, data: b64, type: file.type });
       }
 
-      const response = await fetch(N8N_WEBHOOK, {
+      const payload = {
+        id: repId,
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0,5),
+        park_name: parkSel.options[parkSel.selectedIndex].text,
+        vehicle_uid: vehicleSel.value,
+        vehicle_name: selOpt?.dataset.name || '',
+        mileage: document.getElementById('mileage').value || '',
+        category: selectedCategory,
+        description: document.getElementById('description').value,
+        amount: document.getElementById('amount').value || '',
+        user_name: document.getElementById('userName').value,
+        user_tg: document.getElementById('userTg').value,
+        chat_id: document.getElementById('chatId').value,
+        form_type: 'repair',
+        files,
+      };
+
+      const response = await fetch(N8N_SUBMIT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, photos }),
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
       showLoading(false);
-      showSuccess(repId);
-
-    } catch (err) {
-      console.error(err);
-      showLoading(false);
-      // Якщо webhook ще не налаштований — показуємо payload
-      if (N8N_WEBHOOK === 'YOUR_N8N_WEBHOOK_URL') {
-        showLoading(false);
-        console.log('PAYLOAD (webhook не налаштовано):', payload);
+      if (response.ok) {
         showSuccess(repId);
-        showToast('⚠️ Webhook не налаштовано — дані в консолі', 'error');
       } else {
-        showToast('Помилка відправки. Спробуйте ще раз.', 'error');
+        throw new Error(`HTTP ${response.status}`);
       }
+    } catch (err) {
+      showLoading(false);
+      showToast('Помилка відправки. Спробуйте ще раз.', 'error');
     }
   });
 
@@ -1038,7 +521,6 @@
     });
   }
 
-  // ─── UI HELPERS ───────────────────────────────────────────
   function showLoading(show) {
     document.getElementById('loadingOverlay').classList.toggle('show', show);
     document.getElementById('submitBtn').disabled = show;
@@ -1060,7 +542,8 @@
     document.getElementById('vehicleSelect').disabled = true;
     document.getElementById('formSection').style.display = 'block';
     document.getElementById('successScreen').classList.remove('show');
-    loadBranches();
+    loadFleets();
+    readUrlParams();
   }
 
   let toastTimer;
