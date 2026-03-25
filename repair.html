@@ -47,7 +47,6 @@
   input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
   textarea { resize: vertical; min-height: 90px; }
 
-  /* Choices.js dark theme override */
   .choices { width: 100%; }
   .choices__inner { background: var(--surface2) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; padding: 10px 14px !important; min-height: 48px !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 15px !important; }
   .choices__list--dropdown { background: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; z-index: 999 !important; }
@@ -74,7 +73,6 @@
   .cat-pill:hover { border-color: var(--accent); color: var(--text); }
   .cat-pill.active { border-color: var(--accent); background: rgba(240,192,64,0.1); color: var(--accent); }
 
-  /* Audio transcription */
   .desc-row { position: relative; }
   .desc-row textarea { padding-right: 52px; }
   .btn-mic { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; border-radius: 0; }
@@ -150,7 +148,7 @@
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАЯВКА<br>НА <span>РЕМОНТ</span></h1>
-    <p class="form-subtitle">// REP-FORM v3.0 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// REP-FORM v3.1 — заповніть всі обов'язкові поля</p>
 
     <div class="no-auth" id="noAuthWarning">
       ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.
@@ -169,8 +167,10 @@
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
       <input type="hidden" id="chatId">
+      <input type="hidden" id="parkNameHidden">
+      <input type="hidden" id="vehicleNameHidden">
+      <input type="hidden" id="assetIdHidden">
 
-      <!-- BLOCK 1: Автомобіль -->
       <div class="section">
         <div class="section-label">01 — Автомобіль</div>
 
@@ -201,7 +201,6 @@
         </div>
       </div>
 
-      <!-- BLOCK 2: Ремонт -->
       <div class="section">
         <div class="section-label">02 — Тип ремонту</div>
 
@@ -238,7 +237,6 @@
         </div>
       </div>
 
-      <!-- BLOCK 3: Фото/Відео -->
       <div class="section">
         <div class="section-label">03 — Фото / Відео</div>
         <div class="field">
@@ -296,7 +294,6 @@
     setupSpeechRecognition();
   });
 
-  // ─── URL PARAMS ───────────────────────────────────────────
   function readUrlParams() {
     const p = new URLSearchParams(location.search);
     const tg = p.get('tg') || '';
@@ -314,7 +311,6 @@
     }
   }
 
-  // ─── CHOICES.JS INIT ──────────────────────────────────────
   function initChoices() {
     parkChoices = new Choices('#parkSelect', {
       searchEnabled: true,
@@ -336,11 +332,20 @@
 
     document.getElementById('parkSelect').addEventListener('change', () => {
       const warehouseId = document.getElementById('parkSelect').value;
+      const sel = document.getElementById('parkSelect');
+      const selectedText = sel.options[sel.selectedIndex]?.text || '';
+      document.getElementById('parkNameHidden').value = selectedText;
       if (warehouseId) loadVehicles(warehouseId);
+    });
+
+    document.getElementById('vehicleSelect').addEventListener('change', () => {
+      const sel = document.getElementById('vehicleSelect');
+      const idx = sel.selectedIndex;
+      document.getElementById('vehicleNameHidden').value = sel.options[idx]?.dataset.name || '';
+      document.getElementById('assetIdHidden').value = sel.options[idx]?.dataset.assetId || '';
     });
   }
 
-  // ─── FLEETS ───────────────────────────────────────────────
   async function loadFleets() {
     try {
       const res = await fetch(`${N8N_BASE}/fleets`);
@@ -355,6 +360,8 @@
       const saved = localStorage.getItem('gcar_park_id');
       if (saved) {
         parkChoices.setChoiceByValue(saved);
+        const savedName = localStorage.getItem('gcar_park_name') || '';
+        document.getElementById('parkNameHidden').value = savedName;
         showSavedHint();
         loadVehicles(saved);
       }
@@ -363,7 +370,6 @@
     }
   }
 
-  // ─── VEHICLES ─────────────────────────────────────────────
   async function loadVehicles(warehouseId) {
     const loader = document.getElementById('vehiclesLoading');
     loader.style.display = 'block';
@@ -386,16 +392,29 @@
         return;
       }
 
+      const vSel = document.getElementById('vehicleSelect');
+
       vehicleChoices.clearChoices();
       vehicleChoices.setChoices([
         { value: '', label: '— оберіть автомобіль', placeholder: true, selected: true, disabled: true },
         ...data.map(v => ({
           value: v.uid,
           label: `${v.uid} — ${v.brand} ${v.model}`,
-          customProperties: { name: v.title, id: v.id }
+          customProperties: { name: v.title, assetId: v.id }
         }))
       ], 'value', 'label', true);
       vehicleChoices.enable();
+
+      // Store data attributes on options after Choices renders
+      setTimeout(() => {
+        data.forEach(v => {
+          const opt = vSel.querySelector(`option[value="${v.uid}"]`);
+          if (opt) {
+            opt.dataset.name = v.title || '';
+            opt.dataset.assetId = v.id || '';
+          }
+        });
+      }, 100);
 
     } catch (e) {
       loader.style.display = 'none';
@@ -403,13 +422,12 @@
     }
   }
 
-  // ─── REMEMBER PARK ────────────────────────────────────────
   function rememberPark() {
     const val = document.getElementById('parkSelect').value;
     if (!val) { showToast('Спочатку оберіть автопарк', 'error'); return; }
-    const label = parkChoices.getValue(true)?.label || '';
+    const name = document.getElementById('parkNameHidden').value;
     localStorage.setItem('gcar_park_id', val);
-    localStorage.setItem('gcar_park_name', label);
+    localStorage.setItem('gcar_park_name', name);
     showSavedHint();
     showToast('✓ Автопарк збережено', 'success');
     const btn = document.getElementById('btnRemember');
@@ -429,7 +447,6 @@
     hint.style.display = 'block';
   }
 
-  // ─── CATEGORY PILLS ───────────────────────────────────────
   function setupCategoryPills() {
     document.querySelectorAll('.cat-pill').forEach(pill => {
       pill.addEventListener('click', () => {
@@ -442,56 +459,31 @@
     });
   }
 
-  // ─── SPEECH RECOGNITION ───────────────────────────────────
   function setupSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       document.getElementById('btnMic').style.display = 'none';
       return;
     }
-
     recognition = new SpeechRecognition();
     recognition.lang = 'uk-UA';
     recognition.continuous = true;
     recognition.interimResults = true;
-
     let finalTranscript = '';
-
     recognition.onresult = (event) => {
       let interimTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
-        } else {
-          interimTranscript += transcript;
-        }
+        if (event.results[i].isFinal) { finalTranscript += transcript + ' '; }
+        else { interimTranscript += transcript; }
       }
-      const desc = document.getElementById('description');
-      desc.value = finalTranscript + interimTranscript;
+      document.getElementById('description').value = finalTranscript + interimTranscript;
     };
-
-    recognition.onend = () => {
-      if (isRecording) {
-        recognition.start();
-      }
-    };
-
-    recognition.onerror = (e) => {
-      if (e.error !== 'no-speech') {
-        showToast('Помилка мікрофону', 'error');
-        stopRecording();
-      }
-    };
+    recognition.onend = () => { if (isRecording) recognition.start(); };
+    recognition.onerror = (e) => { if (e.error !== 'no-speech') { showToast('Помилка мікрофону', 'error'); stopRecording(); } };
   }
 
-  function toggleRecording() {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  }
+  function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
 
   function startRecording() {
     if (!recognition) return;
@@ -515,22 +507,14 @@
     setTimeout(() => { hint.classList.remove('show'); }, 2000);
   }
 
-  // ─── DRAG & DROP ──────────────────────────────────────────
   function setupDragDrop() {
     const dz = document.getElementById('photoDropzone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
     dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
-    dz.addEventListener('drop', e => {
-      e.preventDefault();
-      dz.style.borderColor = '';
-      addFiles(Array.from(e.dataTransfer.files));
-    });
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; addFiles(Array.from(e.dataTransfer.files)); });
   }
 
-  function handleFiles(input) {
-    addFiles(Array.from(input.files));
-    input.value = '';
-  }
+  function handleFiles(input) { addFiles(Array.from(input.files)); input.value = ''; }
 
   function addFiles(files) {
     files.forEach(file => {
@@ -551,9 +535,7 @@
       wrap.innerHTML = `<video class="video-preview" src="${url}" muted></video><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
     } else {
       const reader = new FileReader();
-      reader.onload = e => {
-        wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
-      };
+      reader.onload = e => { wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`; };
       reader.readAsDataURL(file);
     }
     document.getElementById('photoPreviews').appendChild(wrap);
@@ -564,59 +546,35 @@
     document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`)?.remove();
   }
 
-  // ─── VALIDATION ───────────────────────────────────────────
   function validate() {
     let ok = true;
-
     const parkVal = document.getElementById('parkSelect').value;
-    if (!parkVal) {
-      document.querySelector('.choices').classList.add('is-invalid');
-      document.getElementById('parkError').style.display = 'block';
-      ok = false;
-    } else {
-      document.querySelector('.choices').classList.remove('is-invalid');
-      document.getElementById('parkError').style.display = 'none';
-    }
-
+    if (!parkVal) { document.querySelector('.choices').classList.add('is-invalid'); document.getElementById('parkError').style.display = 'block'; ok = false; }
+    else { document.querySelector('.choices').classList.remove('is-invalid'); document.getElementById('parkError').style.display = 'none'; }
     const vehicleVal = document.getElementById('vehicleSelect').value;
-    if (!vehicleVal) {
-      document.getElementById('vehicleError').style.display = 'block';
-      ok = false;
-    } else {
-      document.getElementById('vehicleError').style.display = 'none';
-    }
-
-    if (!selectedCategory) {
-      document.getElementById('categoryError').style.display = 'block';
-      ok = false;
-    } else {
-      document.getElementById('categoryError').style.display = 'none';
-    }
-
+    if (!vehicleVal) { document.getElementById('vehicleError').style.display = 'block'; ok = false; }
+    else { document.getElementById('vehicleError').style.display = 'none'; }
+    if (!selectedCategory) { document.getElementById('categoryError').style.display = 'block'; ok = false; }
+    else { document.getElementById('categoryError').style.display = 'none'; }
     const desc = document.getElementById('description');
-    if (!desc.value.trim()) {
-      desc.classList.add('invalid');
-      document.getElementById('descriptionError').style.display = 'block';
-      ok = false;
-    } else {
-      desc.classList.remove('invalid');
-      document.getElementById('descriptionError').style.display = 'none';
-    }
-
+    if (!desc.value.trim()) { desc.classList.add('invalid'); document.getElementById('descriptionError').style.display = 'block'; ok = false; }
+    else { desc.classList.remove('invalid'); document.getElementById('descriptionError').style.display = 'none'; }
     return ok;
   }
 
-  // ─── SUBMIT ───────────────────────────────────────────────
   document.getElementById('repairForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validate()) { showToast('Заповніть всі обов\'язкові поля', 'error'); return; }
 
     const parkSel = document.getElementById('parkSelect');
     const vehicleSel = document.getElementById('vehicleSelect');
-    const parkOption = parkChoices.getValue(true);
-    const vehicleOption = vehicleChoices.getValue(true);
     const repId = 'REP-' + Date.now().toString().slice(-6);
     const now = new Date();
+
+    // Get data from hidden fields (set on change events)
+    const parkName = document.getElementById('parkNameHidden').value;
+    const vehicleName = document.getElementById('vehicleNameHidden').value;
+    const assetId = document.getElementById('assetIdHidden').value;
 
     showLoading(true);
     if (isRecording) stopRecording();
@@ -632,11 +590,11 @@
         id: repId,
         date: now.toISOString().split('T')[0],
         time: now.toTimeString().slice(0,5),
-        park_name: parkOption?.label || '',
+        park_name: parkName,
         warehouse_id: parkSel.value,
         vehicle_uid: vehicleSel.value,
-        vehicle_name: vehicleOption?.customProperties?.name || '',
-        asset_id: vehicleOption?.customProperties?.id || '',
+        vehicle_name: vehicleName,
+        asset_id: assetId,
         mileage: document.getElementById('mileage').value || '',
         category: selectedCategory,
         description: document.getElementById('description').value,
@@ -655,11 +613,8 @@
       });
 
       showLoading(false);
-      if (response.ok) {
-        showSuccess(repId);
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      if (response.ok) { showSuccess(repId); }
+      else { throw new Error(`HTTP ${response.status}`); }
     } catch (err) {
       showLoading(false);
       showToast('Помилка відправки. Спробуйте ще раз.', 'error');
@@ -693,6 +648,9 @@
     document.getElementById('photoPreviews').innerHTML = '';
     document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
     document.getElementById('categoryValue').value = '';
+    document.getElementById('parkNameHidden').value = '';
+    document.getElementById('vehicleNameHidden').value = '';
+    document.getElementById('assetIdHidden').value = '';
     document.getElementById('formSection').style.display = 'block';
     document.getElementById('successScreen').classList.remove('show');
     if (isRecording) stopRecording();
