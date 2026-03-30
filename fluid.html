@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GCAR — Запит на рідини</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <style>
   :root {
     --bg: #0f0f0f;
@@ -20,21 +21,13 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 0 0 60px; }
 
   .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); }
   .form-type-badge { background: var(--accent2); color: white; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; padding: 5px 12px; text-transform: uppercase; }
 
   .container { max-width: 680px; margin: 0 auto; padding: 32px 20px; }
-
   .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 4px; line-height: 1; margin-bottom: 8px; }
   .form-title span { color: var(--accent); }
   .form-subtitle { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 36px; }
@@ -51,14 +44,25 @@
   input, select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; padding: 12px 14px; outline: none; transition: border-color 0.2s; border-radius: 0; appearance: none; -webkit-appearance: none; }
   input:focus, select:focus, textarea:focus { border-color: var(--accent); }
   input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
-  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-  select:disabled { opacity: 0.4; cursor: not-allowed; }
-  select option { background: var(--surface2); }
   textarea { resize: vertical; min-height: 80px; }
 
-  .park-row { display: flex; gap: 8px; align-items: stretch; }
-  .park-row select { flex: 1; }
-  .btn-remember { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 0 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; }
+  .choices { width: 100%; }
+  .choices__inner { background: var(--surface2) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; padding: 10px 14px !important; min-height: 48px !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 15px !important; }
+  .choices__list--dropdown { background: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; z-index: 999 !important; }
+  .choices__list--dropdown .choices__item { color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 14px !important; padding: 10px 14px !important; }
+  .choices__list--dropdown .choices__item--highlighted { background: rgba(58,159,213,0.15) !important; color: var(--accent) !important; }
+  .choices__input { background: var(--surface2) !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 14px !important; border-bottom: 1px solid var(--border) !important; padding: 8px 14px !important; }
+  .choices__input::placeholder { color: var(--muted) !important; }
+  .choices__placeholder { color: var(--muted) !important; opacity: 0.6 !important; }
+  .choices[data-type*="select-one"] .choices__inner::after { border-color: var(--muted) transparent transparent !important; }
+  .choices.is-focused .choices__inner { border-color: var(--accent) !important; }
+  .choices__list--single .choices__item { color: var(--text) !important; }
+  .choices__item--disabled { opacity: 0.4 !important; }
+  .is-disabled .choices__inner { opacity: 0.4 !important; cursor: not-allowed !important; }
+
+  .park-row { display: flex; gap: 8px; align-items: flex-start; }
+  .park-row .choices { flex: 1; }
+  .btn-remember { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 0 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; height: 48px; }
   .btn-remember:hover { border-color: var(--accent); color: var(--accent); }
   .btn-remember.saved { border-color: var(--success); color: var(--success); }
   .saved-hint { font-size: 11px; color: var(--success); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
@@ -117,7 +121,7 @@
   .btn-new:hover { background: var(--accent); color: #0f0f0f; }
 
   .field-error { font-size: 11px; color: var(--error); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
-  input.invalid, select.invalid, textarea.invalid { border-color: var(--error); }
+  input.invalid, textarea.invalid { border-color: var(--error); }
 
   @media (max-width: 480px) {
     .fluid-grid { grid-template-columns: 1fr; }
@@ -136,7 +140,7 @@
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
-    <p class="form-subtitle">// FLD-FORM v2.0 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// FLD-FORM v2.1 — заповніть всі обов'язкові поля</p>
 
     <div class="no-auth" id="noAuthWarning">
       ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.
@@ -155,6 +159,10 @@
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
       <input type="hidden" id="chatId">
+      <input type="hidden" id="parkNameHidden">
+      <input type="hidden" id="vehicleNameHidden">
+      <input type="hidden" id="assetIdHidden">
+      <input type="hidden" id="warehouseIdHidden">
 
       <div class="section">
         <div class="section-label">01 — Автомобіль</div>
@@ -162,7 +170,7 @@
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Автопарк</div>
           <div class="park-row">
-            <select id="parkSelect" required onchange="onParkChange()">
+            <select id="parkSelect" required>
               <option value="">— завантаження...</option>
             </select>
             <button type="button" class="btn-remember" id="btnRemember" onclick="rememberPark()">💾 Запам'ятати</button>
@@ -255,15 +263,19 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
   const N8N_BASE = 'https://n8n.gcarfleet.cfd/webhook';
   const N8N_SUBMIT = 'https://n8n.gcarfleet.cfd/webhook/fluid-submit';
 
   let selectedFiles = [];
   let selectedFluid = '';
+  let parkChoices = null;
+  let vehicleChoices = null;
 
   window.addEventListener('DOMContentLoaded', () => {
     readUrlParams();
+    initChoices();
     loadFleets();
     loadSavedPark();
     setupFluidPills();
@@ -287,58 +299,94 @@
     }
   }
 
+  function initChoices() {
+    parkChoices = new Choices('#parkSelect', {
+      searchEnabled: true,
+      searchPlaceholderValue: 'Пошук автопарку...',
+      noResultsText: 'Нічого не знайдено',
+      noChoicesText: 'Немає варіантів',
+      itemSelectText: '',
+      shouldSort: false,
+    });
+
+    vehicleChoices = new Choices('#vehicleSelect', {
+      searchEnabled: true,
+      searchPlaceholderValue: 'Пошук по номеру або моделі...',
+      noResultsText: 'Нічого не знайдено',
+      noChoicesText: 'Спочатку оберіть автопарк',
+      itemSelectText: '',
+      shouldSort: false,
+    });
+
+    document.getElementById('parkSelect').addEventListener('change', () => {
+      const sel = document.getElementById('parkSelect');
+      const warehouseId = sel.value;
+      const selectedText = sel.options[sel.selectedIndex]?.text || '';
+      document.getElementById('parkNameHidden').value = selectedText;
+      document.getElementById('warehouseIdHidden').value = warehouseId;
+      if (warehouseId) loadVehicles(warehouseId);
+    });
+
+    document.getElementById('vehicleSelect').addEventListener('change', () => {
+      const sel = document.getElementById('vehicleSelect');
+      const idx = sel.selectedIndex;
+      document.getElementById('vehicleNameHidden').value = sel.options[idx]?.dataset.name || '';
+      document.getElementById('assetIdHidden').value = sel.options[idx]?.dataset.assetId || '';
+    });
+  }
+
   async function loadFleets() {
     try {
       const res = await fetch(`${N8N_BASE}/fleets`);
       const data = await res.json();
-      const sel = document.getElementById('parkSelect');
-      sel.innerHTML = '<option value="">— оберіть автопарк</option>';
-      data.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.warehouse_id;
-        opt.textContent = b.title;
-        sel.appendChild(opt);
-      });
+      parkChoices.clearChoices();
+      parkChoices.setChoices([
+        { value: '', label: '— оберіть автопарк', placeholder: true, selected: true, disabled: true },
+        ...data.map(b => ({ value: String(b.warehouse_id), label: b.title }))
+      ], 'value', 'label', true);
       const saved = localStorage.getItem('gcar_park_id');
       if (saved) {
-        sel.value = saved;
-        if (sel.value) { loadVehicles(saved); showSavedHint(); }
+        parkChoices.setChoiceByValue(saved);
+        const savedName = localStorage.getItem('gcar_park_name') || '';
+        document.getElementById('parkNameHidden').value = savedName;
+        document.getElementById('warehouseIdHidden').value = saved;
+        showSavedHint();
+        loadVehicles(saved);
       }
     } catch (e) {
       showToast('Помилка завантаження автопарків', 'error');
     }
   }
 
-  function onParkChange() {
-    const warehouseId = document.getElementById('parkSelect').value;
-    const vSel = document.getElementById('vehicleSelect');
-    vSel.innerHTML = '<option value="">— завантаження...</option>';
-    vSel.disabled = true;
-    if (warehouseId) loadVehicles(warehouseId);
-  }
-
   async function loadVehicles(warehouseId) {
-    const vSel = document.getElementById('vehicleSelect');
     const loader = document.getElementById('vehiclesLoading');
     loader.style.display = 'block';
+    vehicleChoices.clearChoices();
+    vehicleChoices.setChoices([
+      { value: '', label: '— завантаження...', placeholder: true, selected: true, disabled: true }
+    ], 'value', 'label', true);
+    vehicleChoices.disable();
     try {
       const res = await fetch(`${N8N_BASE}/vehicles?warehouse_id=${warehouseId}`);
       const data = await res.json();
       loader.style.display = 'none';
-      vSel.innerHTML = '<option value="">— оберіть автомобіль</option>';
       if (!data.length) {
-        vSel.innerHTML = '<option value="">— авто не знайдено</option>';
-        vSel.disabled = true;
+        vehicleChoices.setChoices([{ value: '', label: '— авто не знайдено', placeholder: true, selected: true, disabled: true }], 'value', 'label', true);
         return;
       }
-      data.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v.uid;
-        opt.textContent = `${v.uid} — ${v.brand} ${v.model}`;
-        opt.dataset.name = v.title;
-        vSel.appendChild(opt);
-      });
-      vSel.disabled = false;
+      const vSel = document.getElementById('vehicleSelect');
+      vehicleChoices.clearChoices();
+      vehicleChoices.setChoices([
+        { value: '', label: '— оберіть автомобіль', placeholder: true, selected: true, disabled: true },
+        ...data.map(v => ({ value: v.uid, label: `${v.uid} — ${v.brand} ${v.model}`, customProperties: { name: v.title, assetId: v.id } }))
+      ], 'value', 'label', true);
+      vehicleChoices.enable();
+      setTimeout(() => {
+        data.forEach(v => {
+          const opt = vSel.querySelector(`option[value="${v.uid}"]`);
+          if (opt) { opt.dataset.name = v.title || ''; opt.dataset.assetId = v.id || ''; }
+        });
+      }, 100);
     } catch (e) {
       loader.style.display = 'none';
       showToast('Помилка завантаження авто', 'error');
@@ -346,21 +394,19 @@
   }
 
   function rememberPark() {
-    const sel = document.getElementById('parkSelect');
-    if (!sel.value) { showToast('Спочатку оберіть автопарк', 'error'); return; }
-    localStorage.setItem('gcar_park_id', sel.value);
-    localStorage.setItem('gcar_park_name', sel.options[sel.selectedIndex].text);
+    const val = document.getElementById('parkSelect').value;
+    if (!val) { showToast('Спочатку оберіть автопарк', 'error'); return; }
+    const name = document.getElementById('parkNameHidden').value;
+    localStorage.setItem('gcar_park_id', val);
+    localStorage.setItem('gcar_park_name', name);
     showSavedHint();
     showToast('✓ Автопарк збережено', 'success');
     const btn = document.getElementById('btnRemember');
-    btn.classList.add('saved');
-    btn.textContent = '✓ Збережено';
+    btn.classList.add('saved'); btn.textContent = '✓ Збережено';
     setTimeout(() => { btn.classList.remove('saved'); btn.textContent = '💾 Запам\'ятати'; }, 2000);
   }
 
-  function loadSavedPark() {
-    if (localStorage.getItem('gcar_park_id')) showSavedHint();
-  }
+  function loadSavedPark() { if (localStorage.getItem('gcar_park_id')) showSavedHint(); }
 
   function showSavedHint() {
     const name = localStorage.getItem('gcar_park_name') || '';
@@ -385,17 +431,10 @@
     const dz = document.getElementById('photoDropzone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
     dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
-    dz.addEventListener('drop', e => {
-      e.preventDefault();
-      dz.style.borderColor = '';
-      addFiles(Array.from(e.dataTransfer.files));
-    });
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; addFiles(Array.from(e.dataTransfer.files)); });
   }
 
-  function handleFiles(input) {
-    addFiles(Array.from(input.files));
-    input.value = '';
-  }
+  function handleFiles(input) { addFiles(Array.from(input.files)); input.value = ''; }
 
   function addFiles(files) {
     files.forEach(file => {
@@ -416,9 +455,7 @@
       wrap.innerHTML = `<video class="video-preview" src="${url}" muted></video><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
     } else {
       const reader = new FileReader();
-      reader.onload = e => {
-        wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
-      };
+      reader.onload = e => { wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`; };
       reader.readAsDataURL(file);
     }
     document.getElementById('photoPreviews').appendChild(wrap);
@@ -426,29 +463,22 @@
 
   function removeFile(idx) {
     selectedFiles[idx] = null;
-    const wrap = document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`);
-    if (wrap) wrap.remove();
+    document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`)?.remove();
   }
 
   function validate() {
     let ok = true;
-    [
-      { id: 'parkSelect', err: 'parkError' },
-      { id: 'vehicleSelect', err: 'vehicleError' },
-      { id: 'fluidValue', err: 'fluidError' },
-      { id: 'amount', err: 'amountError' },
-    ].forEach(f => {
-      const el = document.getElementById(f.id);
-      const errEl = document.getElementById(f.err);
-      if (!el.value.trim()) {
-        el.classList.add('invalid');
-        errEl.style.display = 'block';
-        ok = false;
-      } else {
-        el.classList.remove('invalid');
-        errEl.style.display = 'none';
-      }
-    });
+    const parkVal = document.getElementById('parkSelect').value;
+    if (!parkVal) { document.getElementById('parkError').style.display = 'block'; ok = false; }
+    else { document.getElementById('parkError').style.display = 'none'; }
+    const vehicleVal = document.getElementById('vehicleSelect').value;
+    if (!vehicleVal) { document.getElementById('vehicleError').style.display = 'block'; ok = false; }
+    else { document.getElementById('vehicleError').style.display = 'none'; }
+    if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; }
+    else { document.getElementById('fluidError').style.display = 'none'; }
+    const amount = document.getElementById('amount');
+    if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; }
+    else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
     return ok;
   }
 
@@ -458,9 +488,13 @@
 
     const parkSel = document.getElementById('parkSelect');
     const vehicleSel = document.getElementById('vehicleSelect');
-    const selOpt = vehicleSel.options[vehicleSel.selectedIndex];
     const fldId = 'FLD-' + Date.now().toString().slice(-6);
     const now = new Date();
+
+    const parkName = document.getElementById('parkNameHidden').value;
+    const vehicleName = document.getElementById('vehicleNameHidden').value;
+    const assetId = document.getElementById('assetIdHidden').value;
+    const warehouseId = document.getElementById('warehouseIdHidden').value;
 
     showLoading(true);
 
@@ -475,9 +509,11 @@
         id: fldId,
         date: now.toISOString().split('T')[0],
         time: now.toTimeString().slice(0,5),
-        park_name: parkSel.options[parkSel.selectedIndex].text,
+        park_name: parkName,
+        warehouse_id: warehouseId,
         vehicle_uid: vehicleSel.value,
-        vehicle_name: selOpt?.dataset.name || '',
+        vehicle_name: vehicleName,
+        asset_id: assetId,
         mileage: document.getElementById('mileage').value || '',
         fluid_type: selectedFluid,
         amount_liters: document.getElementById('amount').value,
@@ -496,11 +532,8 @@
       });
 
       showLoading(false);
-      if (response.ok) {
-        showSuccess(fldId);
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      if (response.ok) { showSuccess(fldId); }
+      else { throw new Error(`HTTP ${response.status}`); }
     } catch (err) {
       showLoading(false);
       showToast('Помилка відправки. Спробуйте ще раз.', 'error');
@@ -534,7 +567,10 @@
     document.getElementById('photoPreviews').innerHTML = '';
     document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
     document.getElementById('fluidValue').value = '';
-    document.getElementById('vehicleSelect').disabled = true;
+    document.getElementById('parkNameHidden').value = '';
+    document.getElementById('vehicleNameHidden').value = '';
+    document.getElementById('assetIdHidden').value = '';
+    document.getElementById('warehouseIdHidden').value = '';
     document.getElementById('formSection').style.display = 'block';
     document.getElementById('successScreen').classList.remove('show');
     loadFleets();
