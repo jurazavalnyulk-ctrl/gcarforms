@@ -8,18 +8,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <style>
 :root {
-  --bg: #0f0f0f;
-  --surface: #181818;
-  --surface2: #222222;
-  --border: #2e2e2e;
-  --accent: #3a9fd5;
-  --accent2: #1a6fa0;
-  --text: #f0ede6;
-  --muted: #888;
-  --success: #4caf7d;
-  --error: #e05c2a;
+  --bg: #0f0f0f; --surface: #181818; --surface2: #222222; --border: #2e2e2e;
+  --accent: #3a9fd5; --accent2: #1a6fa0; --text: #f0ede6; --muted: #888;
+  --success: #4caf7d; --error: #e05c2a;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 0 0 60px; }
 .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
@@ -41,7 +33,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
 textarea { resize: vertical; min-height: 80px; }
 
-/* ===== CHOICES.JS — DROPDOWN FIX ===== */
+/* CHOICES FIX */
 .choices { width: 100%; }
 .choices__inner { background: var(--surface2) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; padding: 10px 14px !important; min-height: 48px !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 15px !important; }
 .choices__list--dropdown { background: #1e1e1e !important; border: 1px solid var(--border) !important; border-radius: 0 !important; z-index: 999 !important; }
@@ -56,7 +48,6 @@ textarea { resize: vertical; min-height: 80px; }
 .choices__list--single .choices__item { color: var(--text) !important; }
 .choices__item--disabled { opacity: 0.4 !important; }
 .is-disabled .choices__inner { opacity: 0.4 !important; cursor: not-allowed !important; }
-/* ===================================== */
 
 .park-row { display: flex; gap: 8px; align-items: flex-start; }
 .park-row .choices { flex: 1; }
@@ -64,12 +55,26 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-remember:hover { border-color: var(--accent); color: var(--accent); }
 .btn-remember.saved { border-color: var(--success); color: var(--success); }
 .saved-hint { font-size: 11px; color: var(--success); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
+
 .fluid-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .fluid-pill { border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .fluid-pill:hover { border-color: var(--accent); color: var(--text); }
 .fluid-pill.active { border-color: var(--accent); background: rgba(58,159,213,0.1); color: var(--accent); }
+
 .amount-row { display: grid; grid-template-columns: 1fr 120px; gap: 8px; align-items: end; }
 .unit-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 12px 14px; text-align: center; letter-spacing: 1px; }
+
+/* MIC */
+.note-row { position: relative; }
+.note-row textarea { padding-right: 52px; }
+.btn-mic { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; border-radius: 0; }
+.btn-mic:hover { border-color: var(--accent); color: var(--accent); }
+.btn-mic.recording { border-color: var(--error); color: var(--error); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.mic-hint { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
+.mic-hint.show { display: block; }
+.mic-hint.recording { color: var(--error); }
+
 .user-card { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
 .user-avatar { width: 40px; height: 40px; background: rgba(58,159,213,0.1); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .user-info-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
@@ -110,29 +115,19 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-new:hover { background: var(--accent); color: #0f0f0f; }
 .field-error { font-size: 11px; color: var(--error); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
 input.invalid, textarea.invalid { border-color: var(--error); }
-@media (max-width: 480px) {
-  .fluid-grid { grid-template-columns: 1fr; }
-  .form-title { font-size: 36px; }
-  .amount-row { grid-template-columns: 1fr; }
-}
+@media (max-width: 480px) { .fluid-grid { grid-template-columns: 1fr; } .form-title { font-size: 36px; } .amount-row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="logo">GCAR</div>
   <div class="form-type-badge">🛢 Рідини</div>
 </div>
-
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
-    <p class="form-subtitle">// FLD-FORM v2.1 — заповніть всі обов'язкові поля</p>
-
-    <div class="no-auth" id="noAuthWarning">
-      ⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.
-    </div>
-
+    <p class="form-subtitle">// FLD-FORM v2.2 — заповніть всі обов'язкові поля</p>
+    <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
       <div>
@@ -141,7 +136,6 @@ input.invalid, textarea.invalid { border-color: var(--error); }
         <div class="user-info-tg" id="displayTg">—</div>
       </div>
     </div>
-
     <form id="fluidForm" novalidate>
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
@@ -153,28 +147,21 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 
       <div class="section">
         <div class="section-label">01 — Автомобіль</div>
-
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Автопарк</div>
           <div class="park-row">
-            <select id="parkSelect" required>
-              <option value="">— завантаження...</option>
-            </select>
+            <select id="parkSelect" required><option value=""></option></select>
             <button type="button" class="btn-remember" id="btnRemember" onclick="rememberPark()">💾 Запам'ятати</button>
           </div>
           <div class="saved-hint" id="savedHint"></div>
           <div class="field-error" id="parkError">Оберіть автопарк</div>
         </div>
-
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Автомобіль</div>
-          <select id="vehicleSelect" required disabled>
-            <option value="">— спочатку оберіть автопарк</option>
-          </select>
+          <select id="vehicleSelect" required disabled><option value=""></option></select>
           <div class="vehicles-loading" id="vehiclesLoading">⏳ Завантаження авто...</div>
           <div class="field-error" id="vehicleError">Оберіть автомобіль</div>
         </div>
-
         <div class="field">
           <div class="field-label">Пробіг (км) <span class="optional-tag">опційно</span></div>
           <input type="number" id="mileage" placeholder="напр. 87430" min="0">
@@ -182,10 +169,9 @@ input.invalid, textarea.invalid { border-color: var(--error); }
       </div>
 
       <div class="section">
-        <div class="section-label">02 — Тип рідини</div>
-
+        <div class="section-label">02 — Тип</div>
         <div class="field">
-          <div class="field-label"><span class="required-dot"></span> Оберіть рідину</div>
+          <div class="field-label"><span class="required-dot"></span> Оберіть рідину або тип</div>
           <div class="fluid-grid">
             <div class="fluid-pill" data-value="Моторна олива">🛢 Моторна олива</div>
             <div class="fluid-pill" data-value="Антифриз">❄️ Антифриз</div>
@@ -194,24 +180,27 @@ input.invalid, textarea.invalid { border-color: var(--error); }
             <div class="fluid-pill" data-value="Омивач">💧 Омивач</div>
             <div class="fluid-pill" data-value="AdBlue">🟦 AdBlue</div>
             <div class="fluid-pill" data-value="Паливо">⛽ Паливо</div>
+            <div class="fluid-pill" data-value="Лампочки">💡 Лампочки</div>
             <div class="fluid-pill" data-value="Інше">… Інше</div>
           </div>
           <input type="hidden" id="fluidValue" required>
-          <div class="field-error" id="fluidError">Оберіть тип рідини</div>
+          <div class="field-error" id="fluidError">Оберіть тип</div>
         </div>
-
         <div class="field">
           <div class="field-label"><span class="required-dot"></span> Кількість</div>
           <div class="amount-row">
             <input type="number" id="amount" placeholder="напр. 4" min="0.1" step="0.1" required>
-            <div class="unit-badge">літри</div>
+            <div class="unit-badge" id="unitBadge">літри</div>
           </div>
           <div class="field-error" id="amountError">Вкажіть кількість</div>
         </div>
-
         <div class="field">
           <div class="field-label">Примітка <span class="optional-tag">опційно</span></div>
-          <textarea id="note" placeholder="Додаткова інформація..."></textarea>
+          <div class="note-row">
+            <textarea id="note" placeholder="Додаткова інформація або надиктуйте 🎤..."></textarea>
+            <button type="button" class="btn-mic" id="btnMic" onclick="toggleRecording()" title="Надиктувати голосом">🎤</button>
+          </div>
+          <div class="mic-hint" id="micHint">Говоріть — текст з'явиться автоматично</div>
         </div>
       </div>
 
@@ -234,7 +223,6 @@ input.invalid, textarea.invalid { border-color: var(--error); }
       </div>
     </form>
   </div>
-
   <div class="success-screen" id="successScreen">
     <div class="success-icon">✅</div>
     <div class="success-title">ЗАПИТ ВІДПРАВЛЕНО</div>
@@ -242,37 +230,24 @@ input.invalid, textarea.invalid { border-color: var(--error); }
     <button class="btn-new" onclick="resetForm()">+ НОВИЙ ЗАПИТ</button>
   </div>
 </div>
-
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text">НАДСИЛАННЯ...</div>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">НАДСИЛАННЯ...</div></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
 const N8N_BASE = 'https://n8n.gcarfleet.cfd/webhook';
 const N8N_SUBMIT = 'https://n8n.gcarfleet.cfd/webhook/fluid-submit';
-
-let selectedFiles = [];
-let selectedFluid = '';
-let parkChoices = null;
-let vehicleChoices = null;
+let selectedFiles = [], selectedFluid = '', parkChoices = null, vehicleChoices = null;
+let recognition = null, isRecording = false;
 
 window.addEventListener('DOMContentLoaded', () => {
-  readUrlParams();
-  initChoices();
-  loadFleets();
-  loadSavedPark();
-  setupFluidPills();
-  setupDragDrop();
+  readUrlParams(); initChoices(); loadFleets(); loadSavedPark();
+  setupFluidPills(); setupDragDrop(); setupSpeechRecognition();
 });
 
 function readUrlParams() {
   const p = new URLSearchParams(location.search);
-  const tg = p.get('tg') || '';
-  const name = p.get('name') || '';
-  const chat_id = p.get('chat_id') || '';
+  const tg = p.get('tg') || '', name = p.get('name') || '', chat_id = p.get('chat_id') || '';
   if (chat_id) document.getElementById('chatId').value = chat_id;
   if (tg && name) {
     document.getElementById('userName').value = name;
@@ -280,43 +255,40 @@ function readUrlParams() {
     document.getElementById('displayName').textContent = name;
     document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
     document.getElementById('userCard').style.display = 'flex';
-  } else {
-    document.getElementById('noAuthWarning').style.display = 'block';
-  }
+  } else { document.getElementById('noAuthWarning').style.display = 'block'; }
 }
 
 function initChoices() {
   parkChoices = new Choices('#parkSelect', {
-    searchEnabled: true,
-    searchPlaceholderValue: 'Пошук автопарку...',
-    noResultsText: 'Нічого не знайдено',
-    noChoicesText: 'Немає варіантів',
-    itemSelectText: '',
-    shouldSort: false,
+    searchEnabled: true, searchPlaceholderValue: 'Пошук автопарку...',
+    noResultsText: 'Нічого не знайдено', noChoicesText: 'Немає варіантів',
+    itemSelectText: '', shouldSort: false, placeholderValue: '— оберіть автопарк',
   });
   vehicleChoices = new Choices('#vehicleSelect', {
-    searchEnabled: true,
-    searchPlaceholderValue: 'Пошук по номеру або моделі...',
-    noResultsText: 'Нічого не знайдено',
-    noChoicesText: 'Спочатку оберіть автопарк',
-    itemSelectText: '',
-    shouldSort: false,
+    searchEnabled: true, searchPlaceholderValue: 'Пошук по номеру або моделі...',
+    noResultsText: 'Нічого не знайдено', noChoicesText: 'Спочатку оберіть автопарк',
+    itemSelectText: '', shouldSort: false, placeholderValue: '— оберіть автомобіль',
   });
-
   document.getElementById('parkSelect').addEventListener('change', () => {
     const sel = document.getElementById('parkSelect');
-    const warehouseId = sel.value;
-    const selectedText = sel.options[sel.selectedIndex]?.text || '';
-    document.getElementById('parkNameHidden').value = selectedText;
-    document.getElementById('warehouseIdHidden').value = warehouseId;
-    if (warehouseId) loadVehicles(warehouseId);
+    document.getElementById('parkNameHidden').value = sel.options[sel.selectedIndex]?.text || '';
+    document.getElementById('warehouseIdHidden').value = sel.value;
+    if (sel.value) loadVehicles(sel.value);
   });
-
   document.getElementById('vehicleSelect').addEventListener('change', () => {
     const sel = document.getElementById('vehicleSelect');
     const idx = sel.selectedIndex;
     document.getElementById('vehicleNameHidden').value = sel.options[idx]?.dataset.name || '';
     document.getElementById('assetIdHidden').value = sel.options[idx]?.dataset.assetId || '';
+    const uid = sel.value;
+    if (uid) {
+      const mileageEl = document.getElementById('mileage');
+      mileageEl.placeholder = '⏳ завантаження з GPS...';
+      fetch(`${N8N_BASE}/odometer?uid=${uid}`)
+        .then(r => r.json())
+        .then(data => { if (data.odometer) mileageEl.value = data.odometer; mileageEl.placeholder = 'напр. 87430'; })
+        .catch(() => { mileageEl.placeholder = 'напр. 87430'; });
+    }
   });
 }
 
@@ -324,7 +296,6 @@ async function loadFleets() {
   try {
     const res = await fetch(`${N8N_BASE}/fleets`);
     const data = await res.json();
-    parkChoices.clearChoices();
     parkChoices.setChoices([
       { value: '', label: '— оберіть автопарк', placeholder: true, selected: true, disabled: true },
       ...data.map(b => ({ value: String(b.warehouse_id), label: b.title }))
@@ -332,44 +303,30 @@ async function loadFleets() {
     const saved = localStorage.getItem('gcar_park_id');
     if (saved) {
       parkChoices.setChoiceByValue(saved);
-      const savedName = localStorage.getItem('gcar_park_name') || '';
-      document.getElementById('parkNameHidden').value = savedName;
+      document.getElementById('parkNameHidden').value = localStorage.getItem('gcar_park_name') || '';
       document.getElementById('warehouseIdHidden').value = saved;
-      showSavedHint();
-      loadVehicles(saved);
+      showSavedHint(); loadVehicles(saved);
     }
-  } catch (e) {
-    showToast('Помилка завантаження автопарків', 'error');
-  }
+  } catch (e) { showToast('Помилка завантаження автопарків', 'error'); }
 }
 
 async function loadVehicles(warehouseId) {
   const loader = document.getElementById('vehiclesLoading');
   loader.style.display = 'block';
-  vehicleChoices.clearChoices();
-  vehicleChoices.setChoices([
-    { value: '', label: '— завантаження...', placeholder: true, selected: true, disabled: true }
-  ], 'value', 'label', true);
   vehicleChoices.disable();
   try {
     const res = await fetch(`${N8N_BASE}/vehicles?warehouse_id=${warehouseId}`);
     const data = await res.json();
     loader.style.display = 'none';
+    vehicleChoices.clearChoices();
     if (!data.length) {
-      vehicleChoices.setChoices([
-        { value: '', label: '— авто не знайдено', placeholder: true, selected: true, disabled: true }
-      ], 'value', 'label', true);
+      vehicleChoices.setChoices([{ value: '', label: '— авто не знайдено', placeholder: true, selected: true, disabled: true }], 'value', 'label', true);
       return;
     }
     const vSel = document.getElementById('vehicleSelect');
-    vehicleChoices.clearChoices();
     vehicleChoices.setChoices([
       { value: '', label: '— оберіть автомобіль', placeholder: true, selected: true, disabled: true },
-      ...data.map(v => ({
-        value: v.uid,
-        label: `${v.uid} — ${v.brand} ${v.model}`,
-        customProperties: { name: v.title, assetId: v.id }
-      }))
+      ...data.map(v => ({ value: v.uid, label: `${v.uid} — ${v.brand} ${v.model}` }))
     ], 'value', 'label', true);
     vehicleChoices.enable();
     setTimeout(() => {
@@ -378,32 +335,23 @@ async function loadVehicles(warehouseId) {
         if (opt) { opt.dataset.name = v.title || ''; opt.dataset.assetId = v.id || ''; }
       });
     }, 100);
-  } catch (e) {
-    loader.style.display = 'none';
-    showToast('Помилка завантаження авто', 'error');
-  }
+  } catch (e) { loader.style.display = 'none'; showToast('Помилка завантаження авто', 'error'); }
 }
 
 function rememberPark() {
   const val = document.getElementById('parkSelect').value;
   if (!val) { showToast('Спочатку оберіть автопарк', 'error'); return; }
-  const name = document.getElementById('parkNameHidden').value;
   localStorage.setItem('gcar_park_id', val);
-  localStorage.setItem('gcar_park_name', name);
-  showSavedHint();
-  showToast('✓ Автопарк збережено', 'success');
+  localStorage.setItem('gcar_park_name', document.getElementById('parkNameHidden').value);
+  showSavedHint(); showToast('✓ Автопарк збережено', 'success');
   const btn = document.getElementById('btnRemember');
-  btn.classList.add('saved');
-  btn.textContent = '✓ Збережено';
+  btn.classList.add('saved'); btn.textContent = '✓ Збережено';
   setTimeout(() => { btn.classList.remove('saved'); btn.textContent = '💾 Запам\'ятати'; }, 2000);
 }
-
 function loadSavedPark() { if (localStorage.getItem('gcar_park_id')) showSavedHint(); }
-
 function showSavedHint() {
-  const name = localStorage.getItem('gcar_park_name') || '';
   const hint = document.getElementById('savedHint');
-  hint.textContent = `✓ Збережено: ${name}`;
+  hint.textContent = `✓ Збережено: ${localStorage.getItem('gcar_park_name') || ''}`;
   hint.style.display = 'block';
 }
 
@@ -415,8 +363,46 @@ function setupFluidPills() {
       selectedFluid = pill.dataset.value;
       document.getElementById('fluidValue').value = selectedFluid;
       document.getElementById('fluidError').style.display = 'none';
+      // Міняємо одиницю виміру для лампочок
+      document.getElementById('unitBadge').textContent = selectedFluid === 'Лампочки' ? 'штук' : 'літри';
     });
   });
+}
+
+// SPEECH RECOGNITION
+function setupSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { document.getElementById('btnMic').style.display = 'none'; return; }
+  recognition = new SR();
+  recognition.lang = 'uk-UA'; recognition.continuous = true; recognition.interimResults = true;
+  let finalTranscript = '';
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    document.getElementById('note').value = finalTranscript + interim;
+  };
+  recognition.onend = () => { if (isRecording) recognition.start(); };
+  recognition.onerror = (e) => { if (e.error !== 'no-speech') { showToast('Помилка мікрофону', 'error'); stopRecording(); } };
+}
+function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
+function startRecording() {
+  if (!recognition) return;
+  isRecording = true; recognition.start();
+  document.getElementById('btnMic').classList.add('recording');
+  document.getElementById('btnMic').textContent = '⏹';
+  const h = document.getElementById('micHint');
+  h.textContent = '🔴 Запис... натисніть ⏹ щоб зупинити'; h.className = 'mic-hint show recording';
+}
+function stopRecording() {
+  isRecording = false; if (recognition) recognition.stop();
+  document.getElementById('btnMic').classList.remove('recording');
+  document.getElementById('btnMic').textContent = '🎤';
+  const h = document.getElementById('micHint');
+  h.textContent = '✓ Готово'; h.className = 'mic-hint show';
+  setTimeout(() => h.classList.remove('show'), 2000);
 }
 
 function setupDragDrop() {
@@ -425,149 +411,97 @@ function setupDragDrop() {
   dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
   dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; addFiles(Array.from(e.dataTransfer.files)); });
 }
-
 function handleFiles(input) { addFiles(Array.from(input.files)); input.value = ''; }
-
 function addFiles(files) {
   files.forEach(file => {
     if (selectedFiles.length >= 10) { showToast('Максимум 10 файлів', 'error'); return; }
-    if (file.size > 50 * 1024 * 1024) { showToast(`${file.name} — занадто великий (>50МБ)`, 'error'); return; }
-    const idx = selectedFiles.length;
-    selectedFiles.push(file);
-    renderPreview(file, idx);
+    if (file.size > 50*1024*1024) { showToast(`${file.name} — занадто великий (>50МБ)`, 'error'); return; }
+    const idx = selectedFiles.length; selectedFiles.push(file); renderPreview(file, idx);
   });
 }
-
 function renderPreview(file, idx) {
   const wrap = document.createElement('div');
-  wrap.className = 'photo-preview-wrap';
-  wrap.dataset.idx = idx;
+  wrap.className = 'photo-preview-wrap'; wrap.dataset.idx = idx;
   if (file.type.startsWith('video/')) {
-    const url = URL.createObjectURL(file);
-    wrap.innerHTML = `<video class="video-preview" src="${url}" muted></video><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
+    wrap.innerHTML = `<video class="video-preview" src="${URL.createObjectURL(file)}" muted></video><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`;
   } else {
-    const reader = new FileReader();
-    reader.onload = e => { wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`; };
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload = e => { wrap.innerHTML = `<img class="photo-preview" src="${e.target.result}"><button type="button" class="photo-remove" onclick="removeFile(${idx})">✕</button>`; };
+    r.readAsDataURL(file);
   }
   document.getElementById('photoPreviews').appendChild(wrap);
 }
-
-function removeFile(idx) {
-  selectedFiles[idx] = null;
-  document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`)?.remove();
-}
+function removeFile(idx) { selectedFiles[idx] = null; document.querySelector(`.photo-preview-wrap[data-idx="${idx}"]`)?.remove(); }
 
 function validate() {
   let ok = true;
-  const parkVal = document.getElementById('parkSelect').value;
-  if (!parkVal) { document.getElementById('parkError').style.display = 'block'; ok = false; }
-  else { document.getElementById('parkError').style.display = 'none'; }
-  const vehicleVal = document.getElementById('vehicleSelect').value;
-  if (!vehicleVal) { document.getElementById('vehicleError').style.display = 'block'; ok = false; }
-  else { document.getElementById('vehicleError').style.display = 'none'; }
-  if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; }
-  else { document.getElementById('fluidError').style.display = 'none'; }
+  if (!document.getElementById('parkSelect').value) { document.getElementById('parkError').style.display = 'block'; ok = false; } else { document.getElementById('parkError').style.display = 'none'; }
+  if (!document.getElementById('vehicleSelect').value) { document.getElementById('vehicleError').style.display = 'block'; ok = false; } else { document.getElementById('vehicleError').style.display = 'none'; }
+  if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; } else { document.getElementById('fluidError').style.display = 'none'; }
   const amount = document.getElementById('amount');
-  if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; }
-  else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
+  if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; } else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
   return ok;
 }
 
 document.getElementById('fluidForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!validate()) { showToast('Заповніть всі обов\'язкові поля', 'error'); return; }
-  const parkSel = document.getElementById('parkSelect');
-  const vehicleSel = document.getElementById('vehicleSelect');
+  if (isRecording) stopRecording();
+  showLoading(true);
   const fldId = 'FLD-' + Date.now().toString().slice(-6);
   const now = new Date();
-  const parkName = document.getElementById('parkNameHidden').value;
-  const vehicleName = document.getElementById('vehicleNameHidden').value;
-  const assetId = document.getElementById('assetIdHidden').value;
-  const warehouseId = document.getElementById('warehouseIdHidden').value;
-  showLoading(true);
   try {
     const files = [];
-    for (const file of selectedFiles.filter(Boolean)) {
-      const b64 = await toBase64(file);
-      files.push({ name: file.name, data: b64, type: file.type });
-    }
-    const payload = {
-      id: fldId,
-      date: now.toISOString().split('T')[0],
-      time: now.toTimeString().slice(0,5),
-      park_name: parkName,
-      warehouse_id: warehouseId,
-      vehicle_uid: vehicleSel.value,
-      vehicle_name: vehicleName,
-      asset_id: assetId,
-      mileage: document.getElementById('mileage').value || '',
-      fluid_type: selectedFluid,
-      amount_liters: document.getElementById('amount').value,
-      note: document.getElementById('note').value || '',
-      user_name: document.getElementById('userName').value,
-      user_tg: document.getElementById('userTg').value,
-      chat_id: document.getElementById('chatId').value,
-      form_type: 'fluid',
-      files,
-    };
+    for (const file of selectedFiles.filter(Boolean)) { const b64 = await toBase64(file); files.push({ name: file.name, data: b64, type: file.type }); }
     const response = await fetch(N8N_SUBMIT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: fldId, date: now.toISOString().split('T')[0], time: now.toTimeString().slice(0,5),
+        park_name: document.getElementById('parkNameHidden').value,
+        warehouse_id: document.getElementById('warehouseIdHidden').value,
+        vehicle_uid: document.getElementById('vehicleSelect').value,
+        vehicle_name: document.getElementById('vehicleNameHidden').value,
+        asset_id: document.getElementById('assetIdHidden').value,
+        mileage: document.getElementById('mileage').value || '',
+        fluid_type: selectedFluid,
+        amount_liters: document.getElementById('amount').value,
+        note: document.getElementById('note').value || '',
+        user_name: document.getElementById('userName').value,
+        user_tg: document.getElementById('userTg').value,
+        chat_id: document.getElementById('chatId').value,
+        form_type: 'fluid', files,
+      })
     });
     showLoading(false);
-    if (response.ok) { showSuccess(fldId); }
-    else { throw new Error(`HTTP ${response.status}`); }
-  } catch (err) {
-    showLoading(false);
-    showToast('Помилка відправки. Спробуйте ще раз.', 'error');
-  }
+    if (response.ok) showSuccess(fldId); else throw new Error(`HTTP ${response.status}`);
+  } catch (err) { showLoading(false); showToast('Помилка відправки. Спробуйте ще раз.', 'error'); }
 });
 
-function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
-function showLoading(show) {
-  document.getElementById('loadingOverlay').classList.toggle('show', show);
-  document.getElementById('submitBtn').disabled = show;
-}
-
-function showSuccess(id) {
-  document.getElementById('formSection').style.display = 'none';
-  document.getElementById('successScreen').classList.add('show');
-  document.getElementById('successId').textContent = `ID: ${id}`;
-}
+function toBase64(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); }); }
+function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); document.getElementById('submitBtn').disabled = show; }
+function showSuccess(id) { document.getElementById('formSection').style.display = 'none'; document.getElementById('successScreen').classList.add('show'); document.getElementById('successId').textContent = `ID: ${id}`; }
 
 function resetForm() {
   document.getElementById('fluidForm').reset();
-  selectedFiles = [];
-  selectedFluid = '';
+  selectedFiles = []; selectedFluid = '';
   document.getElementById('photoPreviews').innerHTML = '';
   document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
   document.getElementById('fluidValue').value = '';
+  document.getElementById('unitBadge').textContent = 'літри';
   document.getElementById('parkNameHidden').value = '';
   document.getElementById('vehicleNameHidden').value = '';
   document.getElementById('assetIdHidden').value = '';
   document.getElementById('warehouseIdHidden').value = '';
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('successScreen').classList.remove('show');
-  loadFleets();
-  readUrlParams();
+  if (isRecording) stopRecording();
+  loadFleets(); readUrlParams();
 }
 
 let toastTimer;
 function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast show ${type}`;
-  clearTimeout(toastTimer);
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.className = `toast show ${type}`; clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
