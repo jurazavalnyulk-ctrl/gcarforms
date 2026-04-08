@@ -32,8 +32,6 @@ input, select, textarea { width: 100%; background: var(--surface2); border: 1px 
 input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
 textarea { resize: vertical; min-height: 90px; }
-
-/* CHOICES FIX */
 .choices { width: 100%; }
 .choices__inner { background: var(--surface2) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; padding: 10px 14px !important; min-height: 48px !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 15px !important; }
 .choices__list--dropdown { background: #1e1e1e !important; border: 1px solid var(--border) !important; border-radius: 0 !important; z-index: 999 !important; }
@@ -48,7 +46,6 @@ textarea { resize: vertical; min-height: 90px; }
 .choices__list--single .choices__item { color: var(--text) !important; }
 .choices__item--disabled { opacity: 0.4 !important; }
 .is-disabled .choices__inner { opacity: 0.4 !important; cursor: not-allowed !important; }
-
 .park-row { display: flex; gap: 8px; align-items: flex-start; }
 .park-row .choices { flex: 1; }
 .btn-remember { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 0 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; height: 48px; margin-top: 0; }
@@ -120,7 +117,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАЯВКА<br>НА <span>РЕМОНТ</span></h1>
-    <p class="form-subtitle">// REP-FORM v3.2 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// REP-FORM v3.3 — заповніть всі обов'язкові поля</p>
     <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
@@ -134,6 +131,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
       <input type="hidden" id="chatId">
+      <input type="hidden" id="threadId">
       <input type="hidden" id="parkNameHidden">
       <input type="hidden" id="vehicleNameHidden">
       <input type="hidden" id="assetIdHidden">
@@ -237,15 +235,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function readUrlParams() {
   const p = new URLSearchParams(location.search);
-  const tg = p.get('tg') || '', name = p.get('name') || '', chat_id = p.get('chat_id') || '';
+  const tg = p.get('tg') || '';
+  const name = p.get('name') || '';
+  const chat_id = p.get('chat_id') || '';
+  const thread_id = p.get('thread_id') || '';  // ← НОВЕ
+
   if (chat_id) document.getElementById('chatId').value = chat_id;
+  if (thread_id) document.getElementById('threadId').value = thread_id;  // ← НОВЕ
+
   if (tg && name) {
     document.getElementById('userName').value = name;
     document.getElementById('userTg').value = tg;
     document.getElementById('displayName').textContent = name;
     document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
     document.getElementById('userCard').style.display = 'flex';
-  } else { document.getElementById('noAuthWarning').style.display = 'block'; }
+  } else {
+    document.getElementById('noAuthWarning').style.display = 'block';
+  }
 }
 
 function initChoices() {
@@ -259,19 +265,16 @@ function initChoices() {
     noResultsText: 'Нічого не знайдено', noChoicesText: 'Спочатку оберіть автопарк',
     itemSelectText: '', shouldSort: false, placeholderValue: '— оберіть автомобіль',
   });
-
   document.getElementById('parkSelect').addEventListener('change', () => {
     const sel = document.getElementById('parkSelect');
     document.getElementById('parkNameHidden').value = sel.options[sel.selectedIndex]?.text || '';
     if (sel.value) loadVehicles(sel.value);
   });
-
   document.getElementById('vehicleSelect').addEventListener('change', () => {
     const sel = document.getElementById('vehicleSelect');
     const idx = sel.selectedIndex;
     document.getElementById('vehicleNameHidden').value = sel.options[idx]?.dataset.name || '';
     document.getElementById('assetIdHidden').value = sel.options[idx]?.dataset.assetId || '';
-    // Автозаповнення одометра з GPS
     const uid = sel.value;
     if (uid) {
       const mileageEl = document.getElementById('mileage');
@@ -462,6 +465,7 @@ document.getElementById('repairForm').addEventListener('submit', async (e) => {
         user_name: document.getElementById('userName').value,
         user_tg: document.getElementById('userTg').value,
         chat_id: document.getElementById('chatId').value,
+        thread_id: document.getElementById('threadId').value || '',  // ← НОВЕ
         form_type: 'repair', files,
       })
     });
@@ -482,6 +486,7 @@ function resetForm() {
   document.getElementById('parkNameHidden').value = '';
   document.getElementById('vehicleNameHidden').value = '';
   document.getElementById('assetIdHidden').value = '';
+  document.getElementById('threadId').value = '';
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('successScreen').classList.remove('show');
   if (isRecording) stopRecording();
