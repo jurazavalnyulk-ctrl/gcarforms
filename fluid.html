@@ -32,8 +32,6 @@ input, select, textarea { width: 100%; background: var(--surface2); border: 1px 
 input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.5; }
 textarea { resize: vertical; min-height: 80px; }
-
-/* CHOICES FIX */
 .choices { width: 100%; }
 .choices__inner { background: var(--surface2) !important; border: 1px solid var(--border) !important; border-radius: 0 !important; padding: 10px 14px !important; min-height: 48px !important; color: var(--text) !important; font-family: 'IBM Plex Sans', sans-serif !important; font-size: 15px !important; }
 .choices__list--dropdown { background: #1e1e1e !important; border: 1px solid var(--border) !important; border-radius: 0 !important; z-index: 999 !important; }
@@ -48,23 +46,18 @@ textarea { resize: vertical; min-height: 80px; }
 .choices__list--single .choices__item { color: var(--text) !important; }
 .choices__item--disabled { opacity: 0.4 !important; }
 .is-disabled .choices__inner { opacity: 0.4 !important; cursor: not-allowed !important; }
-
 .park-row { display: flex; gap: 8px; align-items: flex-start; }
 .park-row .choices { flex: 1; }
 .btn-remember { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 0 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; height: 48px; }
 .btn-remember:hover { border-color: var(--accent); color: var(--accent); }
 .btn-remember.saved { border-color: var(--success); color: var(--success); }
 .saved-hint { font-size: 11px; color: var(--success); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
-
 .fluid-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .fluid-pill { border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .fluid-pill:hover { border-color: var(--accent); color: var(--text); }
 .fluid-pill.active { border-color: var(--accent); background: rgba(58,159,213,0.1); color: var(--accent); }
-
 .amount-row { display: grid; grid-template-columns: 1fr 120px; gap: 8px; align-items: end; }
 .unit-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 12px 14px; text-align: center; letter-spacing: 1px; }
-
-/* MIC */
 .note-row { position: relative; }
 .note-row textarea { padding-right: 52px; }
 .btn-mic { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; border-radius: 0; }
@@ -74,7 +67,6 @@ textarea { resize: vertical; min-height: 80px; }
 .mic-hint { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
 .mic-hint.show { display: block; }
 .mic-hint.recording { color: var(--error); }
-
 .user-card { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
 .user-avatar { width: 40px; height: 40px; background: rgba(58,159,213,0.1); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .user-info-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
@@ -126,7 +118,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
-    <p class="form-subtitle">// FLD-FORM v2.2 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// FLD-FORM v2.3 — заповніть всі обов'язкові поля</p>
     <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
@@ -140,6 +132,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
       <input type="hidden" id="userName">
       <input type="hidden" id="userTg">
       <input type="hidden" id="chatId">
+      <input type="hidden" id="threadId">
       <input type="hidden" id="parkNameHidden">
       <input type="hidden" id="vehicleNameHidden">
       <input type="hidden" id="assetIdHidden">
@@ -247,15 +240,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function readUrlParams() {
   const p = new URLSearchParams(location.search);
-  const tg = p.get('tg') || '', name = p.get('name') || '', chat_id = p.get('chat_id') || '';
+  const tg = p.get('tg') || '';
+  const name = p.get('name') || '';
+  const chat_id = p.get('chat_id') || '';
+  const thread_id = p.get('thread_id') || '';  // ← НОВЕ
+
   if (chat_id) document.getElementById('chatId').value = chat_id;
+  if (thread_id) document.getElementById('threadId').value = thread_id;  // ← НОВЕ
+
   if (tg && name) {
     document.getElementById('userName').value = name;
     document.getElementById('userTg').value = tg;
     document.getElementById('displayName').textContent = name;
     document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
     document.getElementById('userCard').style.display = 'flex';
-  } else { document.getElementById('noAuthWarning').style.display = 'block'; }
+  } else {
+    document.getElementById('noAuthWarning').style.display = 'block'; }
 }
 
 function initChoices() {
@@ -363,13 +363,11 @@ function setupFluidPills() {
       selectedFluid = pill.dataset.value;
       document.getElementById('fluidValue').value = selectedFluid;
       document.getElementById('fluidError').style.display = 'none';
-      // Міняємо одиницю виміру для лампочок
       document.getElementById('unitBadge').textContent = selectedFluid === 'Лампочки' ? 'штук' : 'літри';
     });
   });
 }
 
-// SPEECH RECOGNITION
 function setupSpeechRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { document.getElementById('btnMic').style.display = 'none'; return; }
@@ -435,11 +433,15 @@ function removeFile(idx) { selectedFiles[idx] = null; document.querySelector(`.p
 
 function validate() {
   let ok = true;
-  if (!document.getElementById('parkSelect').value) { document.getElementById('parkError').style.display = 'block'; ok = false; } else { document.getElementById('parkError').style.display = 'none'; }
-  if (!document.getElementById('vehicleSelect').value) { document.getElementById('vehicleError').style.display = 'block'; ok = false; } else { document.getElementById('vehicleError').style.display = 'none'; }
-  if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; } else { document.getElementById('fluidError').style.display = 'none'; }
+  if (!document.getElementById('parkSelect').value) { document.getElementById('parkError').style.display = 'block'; ok = false; }
+  else { document.getElementById('parkError').style.display = 'none'; }
+  if (!document.getElementById('vehicleSelect').value) { document.getElementById('vehicleError').style.display = 'block'; ok = false; }
+  else { document.getElementById('vehicleError').style.display = 'none'; }
+  if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; }
+  else { document.getElementById('fluidError').style.display = 'none'; }
   const amount = document.getElementById('amount');
-  if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; } else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
+  if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; }
+  else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
   return ok;
 }
 
@@ -469,6 +471,7 @@ document.getElementById('fluidForm').addEventListener('submit', async (e) => {
         user_name: document.getElementById('userName').value,
         user_tg: document.getElementById('userTg').value,
         chat_id: document.getElementById('chatId').value,
+        thread_id: document.getElementById('threadId').value || '',  // ← НОВЕ
         form_type: 'fluid', files,
       })
     });
@@ -480,7 +483,6 @@ document.getElementById('fluidForm').addEventListener('submit', async (e) => {
 function toBase64(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); }); }
 function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); document.getElementById('submitBtn').disabled = show; }
 function showSuccess(id) { document.getElementById('formSection').style.display = 'none'; document.getElementById('successScreen').classList.add('show'); document.getElementById('successId').textContent = `ID: ${id}`; }
-
 function resetForm() {
   document.getElementById('fluidForm').reset();
   selectedFiles = []; selectedFluid = '';
@@ -492,12 +494,12 @@ function resetForm() {
   document.getElementById('vehicleNameHidden').value = '';
   document.getElementById('assetIdHidden').value = '';
   document.getElementById('warehouseIdHidden').value = '';
+  document.getElementById('threadId').value = '';
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('successScreen').classList.remove('show');
   if (isRecording) stopRecording();
   loadFleets(); readUrlParams();
 }
-
 let toastTimer;
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast'); t.textContent = msg;
