@@ -53,11 +53,15 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-remember.saved { border-color: var(--success); color: var(--success); }
 .saved-hint { font-size: 11px; color: var(--success); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
 .fluid-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.fluid-item { display: flex; flex-direction: column; }
 .fluid-pill { border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .fluid-pill:hover { border-color: var(--accent); color: var(--text); }
-.fluid-pill.active { border-color: var(--accent); background: rgba(58,159,213,0.1); color: var(--accent); }
-.amount-row { display: grid; grid-template-columns: 1fr 120px; gap: 8px; align-items: end; }
-.unit-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 12px 14px; text-align: center; letter-spacing: 1px; }
+.fluid-pill.active { border-color: var(--accent); background: rgba(58,159,213,0.15); color: var(--accent); border-bottom: none; }
+.fluid-amount-row { display: none; border: 1px solid var(--accent); border-top: none; background: rgba(58,159,213,0.05); padding: 6px 8px; align-items: center; gap: 6px; }
+.fluid-pill.active + .fluid-amount-row { display: flex; }
+.fluid-amount-input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 7px 10px; outline: none; min-width: 0; width: auto; }
+.fluid-amount-input:focus { border-color: var(--accent); }
+.fluid-unit { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .note-row { position: relative; }
 .note-row textarea { padding-right: 52px; }
 .btn-mic { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; border-radius: 0; }
@@ -106,8 +110,7 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-new { background: transparent; border: 1px solid var(--accent); color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 2px; padding: 14px 32px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
 .btn-new:hover { background: var(--accent); color: #0f0f0f; }
 .field-error { font-size: 11px; color: var(--error); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
-input.invalid, textarea.invalid { border-color: var(--error); }
-@media (max-width: 480px) { .fluid-grid { grid-template-columns: 1fr; } .form-title { font-size: 36px; } .amount-row { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .fluid-grid { grid-template-columns: 1fr; } .form-title { font-size: 36px; } }
 </style>
 </head>
 <body>
@@ -118,7 +121,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
-    <p class="form-subtitle">// FLD-FORM v2.3 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// FLD-FORM v3.0 — можна обрати кілька рідин</p>
     <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
@@ -162,30 +165,48 @@ input.invalid, textarea.invalid { border-color: var(--error); }
       </div>
 
       <div class="section">
-        <div class="section-label">02 — Тип</div>
+        <div class="section-label">02 — Рідини</div>
         <div class="field">
-          <div class="field-label"><span class="required-dot"></span> Оберіть рідину або тип</div>
+          <div class="field-label"><span class="required-dot"></span> Оберіть одну або кілька рідин і вкажіть кількість</div>
           <div class="fluid-grid">
-            <div class="fluid-pill" data-value="Моторна олива">🛢 Моторна олива</div>
-            <div class="fluid-pill" data-value="Антифриз">❄️ Антифриз</div>
-            <div class="fluid-pill" data-value="Гальмівна рідина">🔴 Гальмівна рідина</div>
-            <div class="fluid-pill" data-value="ГПК (рульове)">🔄 ГПК (рульове)</div>
-            <div class="fluid-pill" data-value="Омивач">💧 Омивач</div>
-            <div class="fluid-pill" data-value="AdBlue">🟦 AdBlue</div>
-            <div class="fluid-pill" data-value="Паливо">⛽ Паливо</div>
-            <div class="fluid-pill" data-value="Лампочки">💡 Лампочки</div>
-            <div class="fluid-pill" data-value="Інше">… Інше</div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Моторна олива" data-unit="л">🛢 Моторна олива</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Антифриз" data-unit="л">❄️ Антифриз</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Гальмівна рідина" data-unit="л">🔴 Гальмівна рідина</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="ГПК (рульове)" data-unit="л">🔄 ГПК (рульове)</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Омивач" data-unit="л">💧 Омивач</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="AdBlue" data-unit="л">🟦 AdBlue</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Паливо" data-unit="л">⛽ Паливо</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Лампочки" data-unit="шт">💡 Лампочки</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0" min="1" step="1"><span class="fluid-unit">шт</span></div>
+            </div>
+            <div class="fluid-item">
+              <div class="fluid-pill" data-value="Інше" data-unit="л">… Інше</div>
+              <div class="fluid-amount-row"><input class="fluid-amount-input" type="number" placeholder="0.0" min="0.1" step="0.1"><span class="fluid-unit">л</span></div>
+            </div>
           </div>
-          <input type="hidden" id="fluidValue" required>
-          <div class="field-error" id="fluidError">Оберіть тип</div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span class="required-dot"></span> Кількість</div>
-          <div class="amount-row">
-            <input type="number" id="amount" placeholder="напр. 4" min="0.1" step="0.1" required>
-            <div class="unit-badge" id="unitBadge">літри</div>
-          </div>
-          <div class="field-error" id="amountError">Вкажіть кількість</div>
+          <div class="field-error" id="fluidError">Оберіть хоча б одну рідину і вкажіть кількість</div>
         </div>
         <div class="field">
           <div class="field-label">Примітка <span class="optional-tag">опційно</span></div>
@@ -230,7 +251,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 <script>
 const N8N_BASE = 'https://n8n.gcarfleet.cfd/webhook';
 const N8N_SUBMIT = 'https://n8n.gcarfleet.cfd/webhook/fluid-submit';
-let selectedFiles = [], selectedFluid = '', parkChoices = null, vehicleChoices = null;
+let selectedFiles = [], parkChoices = null, vehicleChoices = null;
 let recognition = null, isRecording = false;
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -240,22 +261,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function readUrlParams() {
   const p = new URLSearchParams(location.search);
-  const tg = p.get('tg') || '';
-  const name = p.get('name') || '';
-  const chat_id = p.get('chat_id') || '';
-  const thread_id = p.get('thread_id') || '';  // ← НОВЕ
-
+  const tg = p.get('tg') || '', name = p.get('name') || '';
+  const chat_id = p.get('chat_id') || '', thread_id = p.get('thread_id') || '';
   if (chat_id) document.getElementById('chatId').value = chat_id;
-  if (thread_id) document.getElementById('threadId').value = thread_id;  // ← НОВЕ
-
+  if (thread_id) document.getElementById('threadId').value = thread_id;
   if (tg && name) {
     document.getElementById('userName').value = name;
     document.getElementById('userTg').value = tg;
     document.getElementById('displayName').textContent = name;
     document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
     document.getElementById('userCard').style.display = 'flex';
-  } else {
-    document.getElementById('noAuthWarning').style.display = 'block'; }
+  } else { document.getElementById('noAuthWarning').style.display = 'block'; }
 }
 
 function initChoices() {
@@ -358,14 +374,26 @@ function showSavedHint() {
 function setupFluidPills() {
   document.querySelectorAll('.fluid-pill').forEach(pill => {
     pill.addEventListener('click', () => {
-      document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      selectedFluid = pill.dataset.value;
-      document.getElementById('fluidValue').value = selectedFluid;
+      pill.classList.toggle('active');
       document.getElementById('fluidError').style.display = 'none';
-      document.getElementById('unitBadge').textContent = selectedFluid === 'Лампочки' ? 'штук' : 'літри';
+      if (pill.classList.contains('active')) {
+        pill.nextElementSibling?.querySelector('.fluid-amount-input')?.focus();
+      }
     });
   });
+}
+
+function getSelectedFluids() {
+  const fluids = [];
+  document.querySelectorAll('.fluid-pill.active').forEach(pill => {
+    const input = pill.nextElementSibling?.querySelector('.fluid-amount-input');
+    fluids.push({
+      type: pill.dataset.value,
+      amount: input?.value || '',
+      unit: pill.dataset.unit || 'л'
+    });
+  });
+  return fluids;
 }
 
 function setupSpeechRecognition() {
@@ -437,11 +465,10 @@ function validate() {
   else { document.getElementById('parkError').style.display = 'none'; }
   if (!document.getElementById('vehicleSelect').value) { document.getElementById('vehicleError').style.display = 'block'; ok = false; }
   else { document.getElementById('vehicleError').style.display = 'none'; }
-  if (!selectedFluid) { document.getElementById('fluidError').style.display = 'block'; ok = false; }
+  const fluids = getSelectedFluids();
+  const valid = fluids.length > 0 && fluids.every(f => f.amount && parseFloat(f.amount) > 0);
+  if (!valid) { document.getElementById('fluidError').style.display = 'block'; ok = false; }
   else { document.getElementById('fluidError').style.display = 'none'; }
-  const amount = document.getElementById('amount');
-  if (!amount.value.trim()) { amount.classList.add('invalid'); document.getElementById('amountError').style.display = 'block'; ok = false; }
-  else { amount.classList.remove('invalid'); document.getElementById('amountError').style.display = 'none'; }
   return ok;
 }
 
@@ -458,21 +485,23 @@ document.getElementById('fluidForm').addEventListener('submit', async (e) => {
     const response = await fetch(N8N_SUBMIT, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: fldId, date: now.toISOString().split('T')[0], time: now.toTimeString().slice(0,5),
+        id: fldId,
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0,5),
         park_name: document.getElementById('parkNameHidden').value,
         warehouse_id: document.getElementById('warehouseIdHidden').value,
         vehicle_uid: document.getElementById('vehicleSelect').value,
         vehicle_name: document.getElementById('vehicleNameHidden').value,
         asset_id: document.getElementById('assetIdHidden').value,
         mileage: document.getElementById('mileage').value || '',
-        fluid_type: selectedFluid,
-        amount_liters: document.getElementById('amount').value,
+        fluids: getSelectedFluids(),
         note: document.getElementById('note').value || '',
         user_name: document.getElementById('userName').value,
         user_tg: document.getElementById('userTg').value,
         chat_id: document.getElementById('chatId').value,
-        thread_id: document.getElementById('threadId').value || '',  // ← НОВЕ
-        form_type: 'fluid', files,
+        thread_id: document.getElementById('threadId').value || '',
+        form_type: 'fluid',
+        files,
       })
     });
     showLoading(false);
@@ -485,16 +514,10 @@ function showLoading(show) { document.getElementById('loadingOverlay').classList
 function showSuccess(id) { document.getElementById('formSection').style.display = 'none'; document.getElementById('successScreen').classList.add('show'); document.getElementById('successId').textContent = `ID: ${id}`; }
 function resetForm() {
   document.getElementById('fluidForm').reset();
-  selectedFiles = []; selectedFluid = '';
+  selectedFiles = [];
   document.getElementById('photoPreviews').innerHTML = '';
   document.querySelectorAll('.fluid-pill').forEach(p => p.classList.remove('active'));
-  document.getElementById('fluidValue').value = '';
-  document.getElementById('unitBadge').textContent = 'літри';
-  document.getElementById('parkNameHidden').value = '';
-  document.getElementById('vehicleNameHidden').value = '';
-  document.getElementById('assetIdHidden').value = '';
-  document.getElementById('warehouseIdHidden').value = '';
-  document.getElementById('threadId').value = '';
+  ['parkNameHidden','vehicleNameHidden','assetIdHidden','warehouseIdHidden','threadId'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('successScreen').classList.remove('show');
   if (isRecording) stopRecording();
