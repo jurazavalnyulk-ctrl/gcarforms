@@ -65,16 +65,19 @@ textarea { resize: vertical; min-height: 90px; }
 .mic-hint { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-top: 5px; display: none; }
 .mic-hint.show { display: block; }
 .mic-hint.recording { color: var(--error); }
-.photo-upload { border: 1px dashed var(--border); background: var(--surface2); padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; position: relative; }
-.photo-upload:hover { border-color: var(--accent); }
-.photo-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.upload-icon { font-size: 28px; margin-bottom: 8px; display: block; }
-.upload-text { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
-.upload-hint { font-size: 11px; color: var(--muted); opacity: 0.5; margin-top: 4px; }
+
+/* ── ФОТО СЕКЦІЯ ── */
+.upload-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.btn-upload { position: relative; overflow: hidden; background: var(--surface2); border: 1px dashed var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.btn-upload:hover { border-color: var(--accent); color: var(--accent); }
+.btn-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0; }
+.btn-upload-icon { font-size: 24px; }
+.upload-hint { font-size: 11px; color: var(--muted); opacity: 0.5; font-family: 'IBM Plex Mono', monospace; }
 .photo-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .photo-preview-wrap { position: relative; }
 .photo-preview, .video-preview { width: 80px; height: 80px; object-fit: cover; border: 1px solid var(--border); display: block; }
 .photo-remove { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: var(--accent2); border: none; color: white; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
 .user-card { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
 .user-avatar { width: 40px; height: 40px; background: rgba(240,192,64,0.1); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .user-info-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
@@ -117,7 +120,7 @@ input.invalid, textarea.invalid { border-color: var(--error); }
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАЯВКА<br>НА <span>РЕМОНТ</span></h1>
-    <p class="form-subtitle">// REP-FORM v3.3 — заповніть всі обов'язкові поля</p>
+    <p class="form-subtitle">// REP-FORM v3.4 — заповніть всі обов'язкові поля</p>
     <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
@@ -196,12 +199,19 @@ input.invalid, textarea.invalid { border-color: var(--error); }
         <div class="section-label">03 — Фото / Відео</div>
         <div class="field">
           <div class="field-label">Файли <span class="optional-tag">опційно, до 10 файлів, макс 50МБ кожен</span></div>
-          <div class="photo-upload" id="photoDropzone">
-            <input type="file" id="photoInput" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handleFiles(this)">
-            <span class="upload-icon">📷🎥</span>
-            <div class="upload-text">Натисніть або перетягніть фото або відео</div>
-            <div class="upload-hint">JPG, PNG, HEIC, MP4, MOV — макс. 50 МБ</div>
+          <div class="upload-buttons">
+            <label class="btn-upload">
+              <input type="file" accept="image/*,video/*" capture="environment" onchange="handleFiles(this)">
+              <span class="btn-upload-icon">📷</span>
+              <span>КАМЕРА</span>
+            </label>
+            <label class="btn-upload">
+              <input type="file" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handleFiles(this)">
+              <span class="btn-upload-icon">🖼</span>
+              <span>ГАЛЕРЕЯ</span>
+            </label>
           </div>
+          <div class="upload-hint">JPG, PNG, HEIC, MP4, MOV — макс. 50 МБ · до 10 файлів</div>
           <div class="photo-previews" id="photoPreviews"></div>
         </div>
       </div>
@@ -230,28 +240,22 @@ let recognition = null, isRecording = false;
 
 window.addEventListener('DOMContentLoaded', () => {
   readUrlParams(); initChoices(); loadFleets(); loadSavedPark();
-  setupCategoryPills(); setupDragDrop(); setupSpeechRecognition();
+  setupCategoryPills(); setupSpeechRecognition();
 });
 
 function readUrlParams() {
   const p = new URLSearchParams(location.search);
-  const tg = p.get('tg') || '';
-  const name = p.get('name') || '';
-  const chat_id = p.get('chat_id') || '';
-  const thread_id = p.get('thread_id') || '';  // ← НОВЕ
-
+  const tg = p.get('tg') || '', name = p.get('name') || '';
+  const chat_id = p.get('chat_id') || '', thread_id = p.get('thread_id') || '';
   if (chat_id) document.getElementById('chatId').value = chat_id;
-  if (thread_id) document.getElementById('threadId').value = thread_id;  // ← НОВЕ
-
+  if (thread_id) document.getElementById('threadId').value = thread_id;
   if (tg && name) {
     document.getElementById('userName').value = name;
     document.getElementById('userTg').value = tg;
     document.getElementById('displayName').textContent = name;
     document.getElementById('displayTg').textContent = tg.startsWith('@') ? tg : '@' + tg;
     document.getElementById('userCard').style.display = 'flex';
-  } else {
-    document.getElementById('noAuthWarning').style.display = 'block';
-  }
+  } else { document.getElementById('noAuthWarning').style.display = 'block'; }
 }
 
 function initChoices() {
@@ -396,12 +400,6 @@ function stopRecording() {
   setTimeout(() => h.classList.remove('show'), 2000);
 }
 
-function setupDragDrop() {
-  const dz = document.getElementById('photoDropzone');
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
-  dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; addFiles(Array.from(e.dataTransfer.files)); });
-}
 function handleFiles(input) { addFiles(Array.from(input.files)); input.value = ''; }
 function addFiles(files) {
   files.forEach(file => {
@@ -465,7 +463,7 @@ document.getElementById('repairForm').addEventListener('submit', async (e) => {
         user_name: document.getElementById('userName').value,
         user_tg: document.getElementById('userTg').value,
         chat_id: document.getElementById('chatId').value,
-        thread_id: document.getElementById('threadId').value || '',  // ← НОВЕ
+        thread_id: document.getElementById('threadId').value || '',
         form_type: 'repair', files,
       })
     });
