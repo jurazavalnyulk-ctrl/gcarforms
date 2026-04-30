@@ -78,16 +78,19 @@ textarea { resize: vertical; min-height: 80px; }
 .user-info-tg { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); margin-top: 2px; }
 .no-auth { background: rgba(224,92,42,0.1); border: 1px solid var(--error); padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--error); margin-bottom: 32px; display: none; }
 .vehicles-loading { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; display: none; }
-.photo-upload { border: 1px dashed var(--border); background: var(--surface2); padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; position: relative; }
-.photo-upload:hover { border-color: var(--accent); }
-.photo-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.upload-icon { font-size: 28px; margin-bottom: 8px; display: block; }
-.upload-text { font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
-.upload-hint { font-size: 11px; color: var(--muted); opacity: 0.5; margin-top: 4px; }
-.photo-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+/* ── ФОТО СЕКЦІЯ ── */
+.upload-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.btn-upload { position: relative; overflow: hidden; background: var(--surface2); border: 1px dashed var(--border); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.btn-upload:hover { border-color: var(--accent); color: var(--accent); }
+.btn-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0; }
+.btn-upload-icon { font-size: 24px; }
+.upload-hint { font-size: 11px; color: var(--muted); opacity: 0.5; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+.photo-previews { display: flex; flex-wrap: wrap; gap: 8px; }
 .photo-preview-wrap { position: relative; }
 .photo-preview, .video-preview { width: 80px; height: 80px; object-fit: cover; border: 1px solid var(--border); display: block; }
 .photo-remove { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: var(--error); border: none; color: white; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
 .submit-section { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 28px; }
 .btn-submit { width: 100%; background: var(--accent); color: #0f0f0f; border: none; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; padding: 18px; cursor: pointer; transition: all 0.2s; }
 .btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
@@ -121,7 +124,7 @@ textarea { resize: vertical; min-height: 80px; }
 <div class="container">
   <div id="formSection">
     <h1 class="form-title">ЗАПИТ<br>НА <span>РІДИНИ</span></h1>
-    <p class="form-subtitle">// FLD-FORM v3.0 — можна обрати кілька рідин</p>
+    <p class="form-subtitle">// FLD-FORM v3.1 — можна обрати кілька рідин</p>
     <div class="no-auth" id="noAuthWarning">⚠️ Форму відкрито без ідентифікації. Будь ласка, використовуйте Telegram бот.</div>
     <div class="user-card" id="userCard" style="display:none">
       <div class="user-avatar">👤</div>
@@ -222,13 +225,20 @@ textarea { resize: vertical; min-height: 80px; }
         <div class="section-label">03 — Фото / Відео</div>
         <div class="field">
           <div class="field-label">Файли <span class="optional-tag">опційно, до 10 файлів, макс 50МБ кожен</span></div>
-          <div class="photo-upload" id="photoDropzone">
-            <input type="file" id="photoInput" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handleFiles(this)">
-            <span class="upload-icon">📷🎥</span>
-            <div class="upload-text">Натисніть або перетягніть фото або відео</div>
-            <div class="upload-hint">JPG, PNG, HEIC, MP4, MOV — макс. 50 МБ</div>
+          <div class="upload-buttons">
+            <label class="btn-upload">
+              <input type="file" accept="image/*,video/*" capture="environment" onchange="handleFiles(this)">
+              <span class="btn-upload-icon">📷</span>
+              <span>КАМЕРА</span>
+            </label>
+            <label class="btn-upload">
+              <input type="file" accept="image/*,video/mp4,video/quicktime,video/x-msvideo" multiple onchange="handleFiles(this)">
+              <span class="btn-upload-icon">🖼</span>
+              <span>ГАЛЕРЕЯ</span>
+            </label>
           </div>
-          <div class="photo-previews" id="photoPreviews"></div>
+          <div class="upload-hint">JPG, PNG, HEIC, MP4, MOV — макс. 50 МБ · до 10 файлів</div>
+          <div class="photo-previews" id="photoPreviews" style="margin-top:12px"></div>
         </div>
       </div>
 
@@ -256,7 +266,7 @@ let recognition = null, isRecording = false;
 
 window.addEventListener('DOMContentLoaded', () => {
   readUrlParams(); initChoices(); loadFleets(); loadSavedPark();
-  setupFluidPills(); setupDragDrop(); setupSpeechRecognition();
+  setupFluidPills(); setupSpeechRecognition();
 });
 
 function readUrlParams() {
@@ -387,11 +397,7 @@ function getSelectedFluids() {
   const fluids = [];
   document.querySelectorAll('.fluid-pill.active').forEach(pill => {
     const input = pill.nextElementSibling?.querySelector('.fluid-amount-input');
-    fluids.push({
-      type: pill.dataset.value,
-      amount: input?.value || '',
-      unit: pill.dataset.unit || 'л'
-    });
+    fluids.push({ type: pill.dataset.value, amount: input?.value || '', unit: pill.dataset.unit || 'л' });
   });
   return fluids;
 }
@@ -431,12 +437,6 @@ function stopRecording() {
   setTimeout(() => h.classList.remove('show'), 2000);
 }
 
-function setupDragDrop() {
-  const dz = document.getElementById('photoDropzone');
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
-  dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; addFiles(Array.from(e.dataTransfer.files)); });
-}
 function handleFiles(input) { addFiles(Array.from(input.files)); input.value = ''; }
 function addFiles(files) {
   files.forEach(file => {
@@ -485,9 +485,7 @@ document.getElementById('fluidForm').addEventListener('submit', async (e) => {
     const response = await fetch(N8N_SUBMIT, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: fldId,
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().slice(0,5),
+        id: fldId, date: now.toISOString().split('T')[0], time: now.toTimeString().slice(0,5),
         park_name: document.getElementById('parkNameHidden').value,
         warehouse_id: document.getElementById('warehouseIdHidden').value,
         vehicle_uid: document.getElementById('vehicleSelect').value,
@@ -500,8 +498,7 @@ document.getElementById('fluidForm').addEventListener('submit', async (e) => {
         user_tg: document.getElementById('userTg').value,
         chat_id: document.getElementById('chatId').value,
         thread_id: document.getElementById('threadId').value || '',
-        form_type: 'fluid',
-        files,
+        form_type: 'fluid', files,
       })
     });
     showLoading(false);
