@@ -117,6 +117,17 @@ textarea { resize: vertical; min-height: 80px; }
 </style>
 </head>
 <body>
+  <div id="browser-banner" style="display:none;background:#ff6b35;color:white;padding:12px 16px;text-align:center;font-size:13px;font-weight:600;position:sticky;top:0;z-index:200;">
+  📸 На Android фото працює краще в браузері
+  <button onclick="Telegram.WebApp.openLink(window.location.href)" style="margin-left:10px;background:white;color:#ff6b35;border:none;padding:5px 12px;font-weight:700;cursor:pointer;font-size:12px;">
+    ВІДКРИТИ В CHROME ↗
+  </button>
+</div>
+<script>
+  if (/Android/i.test(navigator.userAgent) && window.Telegram?.WebApp?.platform) {
+    document.getElementById('browser-banner').style.display = 'block';
+  }
+</script>
 <div class="header">
   <div class="logo">GCAR</div>
   <div class="form-type-badge">🛢 Рідини</div>
